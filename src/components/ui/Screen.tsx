@@ -17,13 +17,16 @@ type Props = {
   style?: ViewStyle;
 };
 
+/** Clears the floating tab bar (default) — detail screens may pass less. */
+const TAB_BAR_CLEARANCE = 112;
+
 /** Standard screen container: background, safe area, 16px gutters. */
 export function Screen({
   title,
   titleAccessory,
   children,
   scroll = true,
-  bottomInset = spacing.xxl,
+  bottomInset = TAB_BAR_CLEARANCE,
   style,
 }: Props) {
   const insets = useSafeAreaInsets();

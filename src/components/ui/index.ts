@@ -4,5 +4,8 @@ export { Card } from './Card';
 export { EmptyState } from './EmptyState';
 export { Input } from './Input';
 export { Screen } from './Screen';
+export { ScreenHeader } from './ScreenHeader';
+export { Segmented } from './Segmented';
+export { Sheet } from './Sheet';
 export { Skeleton, SkeletonCard } from './Skeleton';
 export { StatTile } from './StatTile';
