@@ -92,6 +92,7 @@ export function Button({
       style={({ pressed }) => [
         ...frame,
         variant === 'primary' && !inactive && shadow.accentGlow,
+        variant === 'secondary' && !inactive && shadow.card,
         pressed && styles.pressed,
       ]}
     >

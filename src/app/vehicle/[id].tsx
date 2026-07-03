@@ -28,7 +28,7 @@ import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/aler
 import { formatDate, formatPGK, todayISO } from '@/lib/format';
 import { VEHICLE_CLASS, VEHICLE_STATUS } from '@/lib/labels';
 import { supabase } from '@/lib/supabase';
-import { colors, radius, spacing, type } from '@/lib/theme';
+import { colors, radius, shadow, spacing, type } from '@/lib/theme';
 import { Input, Sheet } from '@/components/ui';
 import type {
   ComplianceDoc,
@@ -163,7 +163,11 @@ export default function VehicleDetail() {
         }
       />
 
-      {photoUrl && <Image source={{ uri: photoUrl }} style={styles.photoBanner} />}
+      {photoUrl && (
+        <View style={styles.photoShadow}>
+          <Image source={{ uri: photoUrl }} style={styles.photoBanner} />
+        </View>
+      )}
 
       <Card>
         <View style={styles.badgeRow}>
@@ -330,6 +334,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadow.card,
   },
   badgeRow: {
     flexDirection: 'row',
@@ -337,11 +342,15 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
+  photoShadow: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.surfaceMuted,
+    ...shadow.card,
+  },
   photoBanner: {
     width: '100%',
     height: 170,
     borderRadius: radius.lg,
-    backgroundColor: colors.surfaceMuted,
   },
   engineNo: {
     ...type.caption,

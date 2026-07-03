@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, DimensionValue, Easing, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { colors, radius, spacing } from '@/lib/theme';
+import { colors, radius, shadow, spacing } from '@/lib/theme';
 
 type Props = {
   width?: DimensionValue;
@@ -64,5 +64,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.md,
     gap: spacing.xs,
+    ...shadow.card,
   },
 });

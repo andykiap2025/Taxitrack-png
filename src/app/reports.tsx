@@ -10,7 +10,7 @@ import { Badge, Card, Screen, ScreenHeader, Segmented, SkeletonCard, StatTile } 
 import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
 import { periodForDate, shiftPeriod, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
-import { colors, font, radius, spacing, type } from '@/lib/theme';
+import { colors, font, radius, shadow, spacing, type } from '@/lib/theme';
 import type { AppSettings } from '@/types/db';
 
 type RangeKey = 'this_fn' | 'last_fn' | '30d';
@@ -371,6 +371,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadow.card,
   },
   tiles: {
     flexDirection: 'row',

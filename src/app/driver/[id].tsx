@@ -43,7 +43,7 @@ import {
   openBalance,
 } from '@/lib/ledger';
 import { supabase } from '@/lib/supabase';
-import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
+import { colors, font, identityColor, radius, shadow, spacing, type } from '@/lib/theme';
 import type {
   BalanceLedgerEntry,
   DailyTakings,
@@ -583,6 +583,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadow.card,
   },
   profileRow: {
     flexDirection: 'row',
@@ -699,9 +700,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: radius.full,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadow.card,
   },
   listRow: {
     flexDirection: 'row',

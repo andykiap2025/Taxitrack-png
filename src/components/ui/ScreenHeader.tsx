@@ -3,7 +3,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, font, radius, spacing } from '@/lib/theme';
+import { colors, font, radius, shadow, spacing } from '@/lib/theme';
 
 type Props = {
   title: string;
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    ...shadow.card,
   },
   backPressed: {
     backgroundColor: colors.surfaceMuted,
