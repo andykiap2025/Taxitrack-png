@@ -1,19 +1,16 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import {
-  CheckCircle2,
+  Check,
   ChevronLeft,
   ChevronRight,
-  ChevronRight as Chevron,
   CloudOff,
-  Moon,
-  RefreshCw,
   Users,
 } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { SyncChip } from '@/components/SyncChip';
-import { Badge, Card, EmptyState, Screen, SkeletonCard } from '@/components/ui';
+import { Card, EmptyState, Screen, SkeletonCard } from '@/components/ui';
 import {
   defaultBusinessDate,
   loadBundle,
@@ -21,10 +18,17 @@ import {
   type CheckinBundle,
 } from '@/lib/checkin';
 import { formatDateLong, formatPGK } from '@/lib/format';
-import { initialsOf } from '@/lib/labels';
+import { initialsOf, titleCase } from '@/lib/labels';
 import { flushQueue, subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
-import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
-import type { DailyTakings } from '@/types/db';
+import { colors, font, radius, spacing, type } from '@/lib/theme';
+import type { DailyTakings, Driver } from '@/types/db';
+
+// Status colors — used ONLY in the pill badge and the card's left strip.
+const STATUS = {
+  over: { strip: '#16A34A', pillBg: '#DCFCE7', pillFg: '#16A34A' },
+  short: { strip: '#DC2626', pillBg: '#FEE2E2', pillFg: '#DC2626' },
+  none: { strip: '#6B7280', pillBg: '#EEF1F5', pillFg: '#6B7280' },
+} as const;
 
 type RowState =
   | { kind: 'pending' }
@@ -108,16 +112,97 @@ export default function CheckinScreen() {
     [bundle],
   );
 
-  const recordedCount = drivers.filter((d) => rowByDriver.has(d.id)).length;
-  const totalReceived = drivers.reduce((sum, d) => {
+  // Unrecorded drivers first, then recorded.
+  const pendingDrivers = drivers.filter((d) => !rowByDriver.has(d.id));
+  const recordedDrivers = drivers.filter((d) => rowByDriver.has(d.id));
+
+  const recordedCount = recordedDrivers.length;
+  const totalReceived = recordedDrivers.reduce((sum, d) => {
     const s = rowByDriver.get(d.id);
     return s?.kind === 'recorded' ? sum + s.amount : sum;
   }, 0);
 
+  const openEntry = (driverId: string) =>
+    router.push({ pathname: '/takings/entry', params: { driverId, date } });
+
+  const DriverRow = ({ d }: { d: Driver }) => {
+    const state = rowByDriver.get(d.id) ?? ({ kind: 'pending' } as RowState);
+    const assignedVehicle = bundle?.assignments[d.id]
+      ? vehicleById.get(bundle.assignments[d.id])
+      : undefined;
+
+    const recorded = state.kind === 'recorded';
+    const status = !recorded
+      ? STATUS.none
+      : state.noTarget
+        ? STATUS.none
+        : state.shortfall > 0
+          ? STATUS.short
+          : STATUS.over;
+
+    const pillLabel = !recorded
+      ? null
+      : state.noTarget
+        ? 'No target'
+        : state.shortfall > 0
+          ? `Short ${formatPGK(state.shortfall, { decimals: 0 })}`
+          : state.surplus > 0
+            ? `+${formatPGK(state.surplus, { decimals: 0 })} over`
+            : 'On target';
+
+    return (
+      <Card
+        key={d.id}
+        onPress={() => openEntry(d.id)}
+        style={StyleSheet.flatten([
+          styles.cardBase,
+          recorded
+            ? { borderLeftColor: status.strip, borderLeftWidth: 3 }
+            : styles.cardPending,
+        ])}
+      >
+        <View style={styles.row}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initialsOf(d.full_name)}</Text>
+            {recorded && (
+              <View style={styles.checkBadge}>
+                <Check color="#FFFFFF" size={9} strokeWidth={4} />
+              </View>
+            )}
+          </View>
+          <View style={styles.info}>
+            <Text style={[type.cardTitle, !recorded && styles.mutedTitle]}>
+              {titleCase(d.full_name)}
+            </Text>
+            <Text style={type.caption} numberOfLines={1}>
+              {assignedVehicle ? assignedVehicle.plate_no : 'No regular taxi'}
+              {recorded && state.queued ? ' · waiting to sync' : ''}
+            </Text>
+          </View>
+          <View style={styles.right}>
+            {recorded ? (
+              <>
+                <Text style={styles.amount}>{formatPGK(state.amount)}</Text>
+                <View style={[styles.pill, { backgroundColor: status.pillBg }]}>
+                  <Text style={[styles.pillText, { color: status.pillFg }]}>{pillLabel}</Text>
+                </View>
+              </>
+            ) : (
+              <View style={styles.pendingRight}>
+                <Text style={styles.pendingText}>Tap to enter</Text>
+                <ChevronRight color={STATUS.none.strip} size={18} />
+              </View>
+            )}
+          </View>
+        </View>
+      </Card>
+    );
+  };
+
   return (
     <Screen title="Check-in" titleAccessory={<SyncChip />}>
       {/* Date navigator */}
-      <Card style={styles.dateCard}>
+      <Card style={StyleSheet.flatten([styles.cardBase, styles.dateCard])}>
         <Pressable onPress={() => shiftDate(-1)} style={styles.dateBtn} hitSlop={8}>
           <ChevronLeft color={colors.text} size={20} />
         </Pressable>
@@ -141,7 +226,7 @@ export default function CheckinScreen() {
 
       {fromCache && (
         <View style={styles.offlineNote}>
-          <CloudOff size={14} color={colors.warning} />
+          <CloudOff size={14} color={STATUS.none.strip} />
           <Text style={styles.offlineText}>
             Offline — showing saved data. Entries will sync when back online.
           </Text>
@@ -155,7 +240,7 @@ export default function CheckinScreen() {
           <SkeletonCard />
         </View>
       ) : !bundle || drivers.length === 0 ? (
-        <Card padded={false}>
+        <Card padded={false} style={styles.cardBase}>
           <EmptyState
             icon={<Users color={colors.textMuted} size={30} />}
             title={error ? "Couldn't load drivers" : 'No active drivers'}
@@ -168,77 +253,25 @@ export default function CheckinScreen() {
         </Card>
       ) : (
         <View style={styles.list}>
+          {pendingDrivers.length > 0 && (
+            <>
+              <Text style={styles.sectionHead}>Not checked in yet</Text>
+              {pendingDrivers.map((d) => (
+                <DriverRow key={d.id} d={d} />
+              ))}
+            </>
+          )}
+          {recordedDrivers.length > 0 && (
+            <>
+              <Text style={styles.sectionHead}>Checked in</Text>
+              {recordedDrivers.map((d) => (
+                <DriverRow key={d.id} d={d} />
+              ))}
+            </>
+          )}
           <Text style={styles.hint}>
-            Tap a driver as their taxi checks in. Skip drivers who didn't work — no entry
-            means no target for them.
+            Skip drivers who didn't work — no entry means no target for them.
           </Text>
-          {drivers.map((d) => {
-            const state = rowByDriver.get(d.id) ?? { kind: 'pending' as const };
-            const assignedVehicle = bundle.assignments[d.id]
-              ? vehicleById.get(bundle.assignments[d.id])
-              : undefined;
-            return (
-              <Card
-                key={d.id}
-                tint={identityColor(d.id).soft}
-                onPress={() =>
-                  router.push({ pathname: '/takings/entry', params: { driverId: d.id, date } })
-                }
-              >
-                <View style={styles.row}>
-                  <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
-                    {state.kind === 'recorded' ? (
-                      state.queued ? (
-                        <RefreshCw color={colors.warning} size={18} />
-                      ) : (
-                        <CheckCircle2 color={colors.success} size={20} />
-                      )
-                    ) : (
-                      <Text style={[styles.avatarText, { color: identityColor(d.id).strong }]}>
-                        {initialsOf(d.full_name)}
-                      </Text>
-                    )}
-                  </View>
-                  <View style={styles.info}>
-                    <Text style={type.cardTitle}>{d.full_name}</Text>
-                    <Text style={type.caption} numberOfLines={1}>
-                      {assignedVehicle ? assignedVehicle.plate_no : 'No regular taxi'}
-                      {state.kind === 'recorded' && state.queued ? ' · waiting to sync' : ''}
-                    </Text>
-                  </View>
-                  <View style={styles.right}>
-                    {state.kind === 'recorded' ? (
-                      <>
-                        <Text style={styles.amount}>{formatPGK(state.amount)}</Text>
-                        {state.noTarget ? (
-                          <Badge label="No target" tone="neutral" />
-                        ) : state.shortfall > 0 ? (
-                          <Badge
-                            label={`Short ${formatPGK(state.shortfall, { decimals: 0 })}`}
-                            tone="danger"
-                            dot
-                          />
-                        ) : state.surplus > 0 ? (
-                          <Badge
-                            label={`+${formatPGK(state.surplus, { decimals: 0 })} over`}
-                            tone="success"
-                            dot
-                          />
-                        ) : (
-                          <Badge label="On target" tone="success" dot />
-                        )}
-                      </>
-                    ) : (
-                      <View style={styles.pendingRight}>
-                        <Moon color={colors.textMuted} size={16} />
-                        <Chevron color={colors.textMuted} size={18} />
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </Card>
-            );
-          })}
         </View>
       )}
     </Screen>
@@ -246,6 +279,19 @@ export default function CheckinScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Rule 1: white cards, 1px #E5E8EC border, radius 16 — no pastel fills.
+  cardBase: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E8EC',
+    borderRadius: 16,
+  },
+  cardPending: {
+    borderStyle: 'dashed',
+    borderColor: '#D6DBE2',
+    borderLeftWidth: 3,
+    borderLeftColor: STATUS.none.strip,
+  },
   dateCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -255,7 +301,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: radius.full,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: '#EEF1F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -276,18 +322,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: colors.warningSoft,
+    backgroundColor: '#EEF1F5',
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
   offlineText: {
     ...type.caption,
-    color: colors.warning,
+    color: STATUS.none.strip,
     flex: 1,
   },
   list: {
     gap: spacing.sm,
+  },
+  sectionHead: {
+    ...type.label,
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.xxs,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
   },
   hint: {
     ...type.caption,
@@ -298,28 +351,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
+  // Rule 4: neutral avatar circle, green check badge overlay when recorded.
   avatar: {
     width: 46,
     height: 46,
     borderRadius: radius.full,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: '#EEF1F5',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  avatarDone: {
-    backgroundColor: colors.successSoft,
-  },
-  avatarQueued: {
-    backgroundColor: colors.warningSoft,
   },
   avatarText: {
     fontFamily: font.bold,
     fontSize: 15,
-    color: colors.textSecondary,
+    color: '#4B5563',
+  },
+  checkBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 17,
+    height: 17,
+    borderRadius: radius.full,
+    backgroundColor: STATUS.over.strip,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   info: {
     flex: 1,
     gap: 2,
+  },
+  mutedTitle: {
+    color: '#6B7280',
   },
   right: {
     alignItems: 'flex-end',
@@ -330,9 +394,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
+  pill: {
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  pillText: {
+    fontFamily: font.semibold,
+    fontSize: 12,
+  },
   pendingRight: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
+  },
+  pendingText: {
+    fontFamily: font.medium,
+    fontSize: 13,
+    color: '#6B7280',
   },
 });

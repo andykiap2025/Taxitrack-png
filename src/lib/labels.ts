@@ -45,6 +45,14 @@ export const PNG_PROVINCES = [
   'Western Highlands',
 ] as const;
 
+export function titleCase(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 export function initialsOf(name: string): string {
   return name
     .split(' ')

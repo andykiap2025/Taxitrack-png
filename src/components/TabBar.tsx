@@ -62,7 +62,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
               accessibilityState={{ selected: active }}
             >
               <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
-                <Icon size={21} color={active ? colors.onAccent : colors.textOnDarkMuted} />
+                <Icon size={21} color={active ? '#FFFFFF' : colors.textOnDarkMuted} />
               </View>
               <Text style={[styles.label, active && styles.labelActive]}>{tab.label}</Text>
             </Pressable>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconWrapActive: {
-    backgroundColor: colors.accent,
+    backgroundColor: 'rgba(255,255,255,0.16)',
   },
   label: {
     fontFamily: font.semibold,

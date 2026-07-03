@@ -7,17 +7,17 @@
 import { Platform, TextStyle, ViewStyle } from 'react-native';
 
 export const colors = {
-  // Brand
-  primary: '#122349', // deep navy
-  primaryDark: '#0B1220',
-  primaryLight: '#1E3A6E',
+  // Brand — single navy
+  primary: '#1E2A4A',
+  primaryDark: '#131C33',
+  primaryLight: '#2C3D6B',
   onPrimary: '#FFFFFF',
   accent: '#F0A800', // web orange (Bright Blue palette)
   accentDark: '#C98D00',
   onAccent: '#231303',
 
   // Surfaces
-  background: '#EAEEF5',
+  background: '#F5F6F8',
   surface: '#FFFFFF',
   /** Card faces: a whisper of blue so cards read as tinted panels. */
   card: '#FAFBFF',
