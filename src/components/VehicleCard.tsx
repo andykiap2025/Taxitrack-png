@@ -15,12 +15,9 @@ export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const idc = identityColor(vehicle.id);
 
   return (
-    <Card
-      tint={idc.soft}
-      onPress={() => router.push({ pathname: '/vehicle/[id]', params: { id: vehicle.id } })}
-    >
+    <Card onPress={() => router.push({ pathname: '/vehicle/[id]', params: { id: vehicle.id } })}>
       <View style={styles.row}>
-        <View style={[styles.iconWrap, { backgroundColor: '#FFFFFF' }]}>
+        <View style={[styles.iconWrap, { backgroundColor: idc.soft }]}>
           <CarFront color={idc.strong} size={22} />
         </View>
         <View style={styles.info}>

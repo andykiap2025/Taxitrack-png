@@ -256,12 +256,12 @@ export default function DriverDetail() {
       />
 
       {/* Profile */}
-      <Card tint={identityColor(driver.id).soft}>
+      <Card>
         <View style={styles.profileRow}>
           {faceUrl ? (
             <Image source={{ uri: faceUrl }} style={styles.avatarPhoto} />
           ) : (
-            <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
+            <View style={[styles.avatar, { backgroundColor: identityColor(driver.id).soft }]}>
               <Text style={[styles.avatarText, { color: identityColor(driver.id).strong }]}>
                 {initialsOf(driver.full_name)}
               </Text>

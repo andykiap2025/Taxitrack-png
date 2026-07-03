@@ -28,7 +28,7 @@ import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/aler
 import { formatDate, formatPGK, todayISO } from '@/lib/format';
 import { VEHICLE_CLASS, VEHICLE_STATUS } from '@/lib/labels';
 import { supabase } from '@/lib/supabase';
-import { colors, identityColor, radius, shadow, spacing, type } from '@/lib/theme';
+import { colors, radius, shadow, spacing, type } from '@/lib/theme';
 import { Input, Sheet } from '@/components/ui';
 import type {
   ComplianceDoc,
@@ -169,7 +169,7 @@ export default function VehicleDetail() {
         </View>
       )}
 
-      <Card tint={identityColor(vehicle.id).soft}>
+      <Card>
         <View style={styles.badgeRow}>
           <Badge label={status.label} tone={status.tone} dot />
           <Badge label={`${VEHICLE_CLASS[vehicle.vehicle_class]} class`} tone="info" />
