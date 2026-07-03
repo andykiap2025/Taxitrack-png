@@ -2,6 +2,9 @@
  * Creates the initial owner + supervisor accounts on your Supabase project.
  * Run ONCE after the migrations (see supabase/README.md).
  *
+ * Talks to the Supabase Auth admin REST API directly with fetch, so it
+ * runs on any Node ≥ 18 with no extra packages.
+ *
  * Usage (PowerShell):
  *   $env:SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
  *   $env:SUPABASE_SERVICE_ROLE_KEY = "service-role-key-from-dashboard"
@@ -12,9 +15,8 @@
  * The service role key is server-side only — never put it in the app's .env
  * EXPO_PUBLIC_* variables and never commit it.
  */
-import { createClient } from '@supabase/supabase-js';
 
-const url = process.env.SUPABASE_URL;
+const url = process.env.SUPABASE_URL?.replace(/\/+$/, '');
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !serviceKey) {
@@ -42,20 +44,36 @@ if (users.length === 0) {
   process.exit(1);
 }
 
-const admin = createClient(url, serviceKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
+let failures = 0;
 
 for (const u of users) {
-  const { data, error } = await admin.auth.admin.createUser({
-    email: u.email,
-    password: u.password,
-    email_confirm: true,
-    user_metadata: { full_name: u.full_name, role: u.role },
-  });
-  if (error) {
-    console.error(`✗ ${u.role} (${u.email}): ${error.message}`);
-  } else {
-    console.log(`✓ ${u.role} created: ${u.email} (${data.user.id})`);
+  try {
+    const res = await fetch(`${url}/auth/v1/admin/users`, {
+      method: 'POST',
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: u.email,
+        password: u.password,
+        email_confirm: true,
+        user_metadata: { full_name: u.full_name, role: u.role },
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) {
+      console.log(`✓ ${u.role} created: ${u.email} (${body.id ?? 'ok'})`);
+    } else {
+      const msg = body.msg ?? body.message ?? body.error_description ?? JSON.stringify(body);
+      console.error(`✗ ${u.role} (${u.email}): ${msg}`);
+      failures++;
+    }
+  } catch (err) {
+    console.error(`✗ ${u.role} (${u.email}): ${err.message}`);
+    failures++;
   }
 }
+
+process.exit(failures > 0 ? 1 : 0);
