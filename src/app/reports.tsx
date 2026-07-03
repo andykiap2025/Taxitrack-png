@@ -274,27 +274,55 @@ export default function ReportsScreen() {
                 <Text style={type.body}>No takings in this range.</Text>
               </View>
             ) : (
-              report.drivers.map((d, idx) => (
-                <View key={d.id} style={[styles.row, idx < report.drivers.length - 1 && styles.divider]}>
-                  <View style={[styles.rank, idx === 0 && styles.rankTop]}>
-                    <Text style={[styles.rankText, idx === 0 && styles.rankTextTop]}>{idx + 1}</Text>
-                  </View>
-                  <View style={styles.info}>
-                    <Text style={type.bodyMedium}>{d.name}</Text>
-                    <Text style={type.caption}>
-                      {d.days} days · avg {formatPGK(d.avg, { decimals: 0 })}/day
+              <>
+                <View style={[styles.tr, styles.thead]}>
+                  <Text style={[styles.th, styles.cRank]}>#</Text>
+                  <Text style={[styles.th, styles.cName]}>Driver</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cDays]}>Days</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cAvg]}>Avg</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cShort]}>Short</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cGross]}>Gross</Text>
+                </View>
+                {report.drivers.map((d, idx) => (
+                  <View key={d.id} style={[styles.tr, idx % 2 === 1 && styles.trAlt]}>
+                    <Text style={[styles.td, styles.cRank]}>{idx + 1}</Text>
+                    <Text style={[styles.td, styles.cName]} numberOfLines={1}>
+                      {d.name}
+                    </Text>
+                    <Text style={[styles.td, styles.cNum, styles.cDays]}>{d.days}</Text>
+                    <Text style={[styles.td, styles.cNum, styles.cAvg]}>
+                      {formatPGK(d.avg, { decimals: 0 })}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.td,
+                        styles.cNum,
+                        styles.cShort,
+                        d.shortfallDays > 0 && { color: colors.danger },
+                      ]}
+                    >
+                      {d.shortfallDays}
+                    </Text>
+                    <Text style={[styles.td, styles.cNum, styles.cGross, styles.tdStrong]}>
+                      {formatPGK(d.gross, { decimals: 0 })}
                     </Text>
                   </View>
-                  <View style={styles.right}>
-                    <Text style={styles.amount}>{formatPGK(d.gross, { decimals: 0 })}</Text>
-                    {d.shortfallDays > 0 ? (
-                      <Badge label={`${d.shortfallDays} short days`} tone="warning" />
-                    ) : (
-                      <Badge label="No shorts" tone="success" />
-                    )}
-                  </View>
+                ))}
+                <View style={[styles.tr, styles.tfoot]}>
+                  <Text style={[styles.th, styles.cRank]}></Text>
+                  <Text style={[styles.th, styles.cName]}>TOTAL</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cDays]}>
+                    {report.drivers.reduce((s, d) => s + d.days, 0)}
+                  </Text>
+                  <Text style={[styles.th, styles.cNum, styles.cAvg]}></Text>
+                  <Text style={[styles.th, styles.cNum, styles.cShort]}>
+                    {report.drivers.reduce((s, d) => s + d.shortfallDays, 0)}
+                  </Text>
+                  <Text style={[styles.th, styles.cNum, styles.cGross]}>
+                    {formatPGK(report.drivers.reduce((s, d) => s + d.gross, 0), { decimals: 0 })}
+                  </Text>
                 </View>
-              ))
+              </>
             )}
           </Card>
 
@@ -305,21 +333,51 @@ export default function ReportsScreen() {
                 <Text style={type.body}>No activity in this range.</Text>
               </View>
             ) : (
-              report.vehicles.map((v, idx) => (
-                <View key={v.id} style={[styles.row, idx < report.vehicles.length - 1 && styles.divider]}>
-                  <View style={styles.info}>
-                    <Text style={type.bodyMedium}>{v.plate}</Text>
-                    <Text style={type.caption}>
-                      Takings {formatPGK(v.gross, { decimals: 0 })}
-                      {v.serviceCost > 0 ? ` · service −${formatPGK(v.serviceCost, { decimals: 0 })}` : ''}
-                      {v.incidentCost > 0 ? ` · incidents −${formatPGK(v.incidentCost, { decimals: 0 })}` : ''}
+              <>
+                <View style={[styles.tr, styles.thead]}>
+                  <Text style={[styles.th, styles.cName]}>Taxi</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>Takings</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>Costs</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>Profit</Text>
+                </View>
+                {report.vehicles.map((v, idx) => (
+                  <View key={v.id} style={[styles.tr, idx % 2 === 1 && styles.trAlt]}>
+                    <Text style={[styles.td, styles.cName]}>{v.plate}</Text>
+                    <Text style={[styles.td, styles.cNum, styles.cMoney]}>
+                      {formatPGK(v.gross, { decimals: 0 })}
+                    </Text>
+                    <Text style={[styles.td, styles.cNum, styles.cMoney]}>
+                      {formatPGK(v.serviceCost + v.incidentCost, { decimals: 0 })}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.td,
+                        styles.cNum,
+                        styles.cMoney,
+                        styles.tdStrong,
+                        v.profit < 0 && { color: colors.danger },
+                      ]}
+                    >
+                      {formatPGK(v.profit, { decimals: 0 })}
                     </Text>
                   </View>
-                  <Text style={[styles.amount, v.profit < 0 && { color: colors.danger }]}>
-                    {formatPGK(v.profit, { decimals: 0 })}
+                ))}
+                <View style={[styles.tr, styles.tfoot]}>
+                  <Text style={[styles.th, styles.cName]}>TOTAL</Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>
+                    {formatPGK(report.vehicles.reduce((s, v) => s + v.gross, 0), { decimals: 0 })}
+                  </Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>
+                    {formatPGK(
+                      report.vehicles.reduce((s, v) => s + v.serviceCost + v.incidentCost, 0),
+                      { decimals: 0 },
+                    )}
+                  </Text>
+                  <Text style={[styles.th, styles.cNum, styles.cMoney]}>
+                    {formatPGK(report.vehicles.reduce((s, v) => s + v.profit, 0), { decimals: 0 })}
                   </Text>
                 </View>
-              ))
+              </>
             )}
           </Card>
 
@@ -457,5 +515,64 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
+  },
+  // table styles
+  tr: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    gap: spacing.xxs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  trAlt: {
+    backgroundColor: colors.surfaceMuted,
+  },
+  thead: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.borderStrong,
+  },
+  tfoot: {
+    borderBottomWidth: 0,
+    borderTopWidth: 2,
+    borderTopColor: colors.borderStrong,
+  },
+  th: {
+    fontFamily: font.bold,
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  td: {
+    fontFamily: font.medium,
+    fontSize: 13,
+    color: colors.text,
+  },
+  tdStrong: {
+    fontFamily: font.bold,
+  },
+  cNum: {
+    textAlign: 'right',
+  },
+  cRank: {
+    width: 22,
+  },
+  cName: {
+    flex: 1,
+  },
+  cDays: {
+    width: 38,
+  },
+  cAvg: {
+    width: 52,
+  },
+  cShort: {
+    width: 42,
+  },
+  cGross: {
+    width: 66,
+  },
+  cMoney: {
+    width: 74,
   },
 });
