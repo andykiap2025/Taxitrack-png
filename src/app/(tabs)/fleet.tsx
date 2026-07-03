@@ -3,8 +3,10 @@ import { CarFront, Plus, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useMemo } from 'react';
+
 import { DriverCard, type DriverWithAssignment } from '@/components/DriverCard';
-import { VehicleCard } from '@/components/VehicleCard';
+import { VehicleCard, type AssignedDriver } from '@/components/VehicleCard';
 import {
   Card,
   EmptyState,
@@ -40,14 +42,25 @@ export default function FleetScreen() {
 
   const canEdit = role === 'owner';
 
+  // vehicle id → current holder, from the drivers' open assignments.
+  const driverByVehicle = useMemo(() => {
+    const map = new Map<string, AssignedDriver>();
+    for (const d of drivers.data ?? []) {
+      for (const a of d.assignments) {
+        if (!a.end_date && a.vehicle) map.set(a.vehicle.id, { id: d.id, name: d.full_name });
+      }
+    }
+    return map;
+  }, [drivers.data]);
+
   const addButton = canEdit ? (
     <Pressable
       onPress={() => router.push(section === 'vehicles' ? '/vehicle/form' : '/driver/form')}
-      style={({ pressed }) => [styles.addBtn, shadow.accentGlow, pressed && styles.addPressed]}
+      style={({ pressed }) => [styles.addBtn, shadow.card, pressed && styles.addPressed]}
       accessibilityRole="button"
       accessibilityLabel={section === 'vehicles' ? 'Add vehicle' : 'Add driver'}
     >
-      <Plus color={colors.onAccent} size={22} />
+      <Plus color="#FFFFFF" size={22} />
     </Pressable>
   ) : undefined;
 
@@ -85,7 +98,14 @@ export default function FleetScreen() {
               />
             </Card>
           ) : (
-            vehicles.data.map((v) => <VehicleCard key={v.id} vehicle={v} />)
+            vehicles.data.map((v) => (
+              <VehicleCard
+                key={v.id}
+                vehicle={v}
+                driver={driverByVehicle.get(v.id) ?? null}
+                onNoDriver={() => setSection('drivers')}
+              />
+            ))
           )}
         </View>
       ) : (
@@ -127,7 +147,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.full,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
