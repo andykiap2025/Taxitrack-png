@@ -47,8 +47,10 @@ export function TabBar({ state, navigation }: TabBarProps) {
   const activeName = state.routes[state.index]?.name;
 
   return (
-    <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
-      <View style={[styles.bar, shadow.raised]}>
+    <View style={styles.wrap}>
+      <View
+        style={[styles.bar, shadow.raised, { paddingBottom: Math.max(insets.bottom, spacing.xs) }]}
+      >
         {visible.map((tab) => {
           const active = activeName === tab.name;
           const Icon = tab.icon;
@@ -79,16 +81,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: spacing.md,
     backgroundColor: 'transparent',
   },
   bar: {
     flexDirection: 'row',
     backgroundColor: colors.primary,
-    borderRadius: radius.xl,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.10)',
-    paddingVertical: spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.12)',
+    paddingTop: spacing.xs,
     paddingHorizontal: spacing.xs,
   },
   item: {
