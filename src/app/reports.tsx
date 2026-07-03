@@ -1,9 +1,9 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { Banknote, CalendarCheck2, FileDown, Target, TrendingUp } from 'lucide-react-native';
+import { Banknote, ChevronRight, FileDown, Table2, Target, TrendingUp } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { BarChart, type BarDatum } from '@/components/BarChart';
 import { Badge, Card, Screen, ScreenHeader, Segmented, SkeletonCard, StatTile } from '@/components/ui';
@@ -54,6 +54,7 @@ function addDays(date: string, days: number): string {
 }
 
 export default function ReportsScreen() {
+  const router = useRouter();
   const [rangeKey, setRangeKey] = useState<RangeKey>('this_fn');
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
@@ -217,6 +218,19 @@ export default function ReportsScreen() {
         }
       />
 
+      <Card onPress={() => router.push('/takings-report')} style={styles.registerLink}>
+        <View style={styles.registerIcon}>
+          <Table2 color={colors.primary} size={20} />
+        </View>
+        <View style={styles.registerText}>
+          <Text style={type.cardTitle}>Takings register</Text>
+          <Text style={type.caption}>
+            Table by day, week, fortnight, month or term · PDF & Excel export
+          </Text>
+        </View>
+        <ChevronRight color={colors.textMuted} size={18} />
+      </Card>
+
       <Segmented<RangeKey>
         options={[
           { value: 'this_fn', label: 'This fortnight' },
@@ -372,6 +386,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.card,
+  },
+  registerLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  registerIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  registerText: {
+    flex: 1,
+    gap: 1,
   },
   tiles: {
     flexDirection: 'row',
