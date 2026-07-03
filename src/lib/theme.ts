@@ -39,6 +39,11 @@ export const colors = {
   dangerSoft: '#FDE9E7',
   info: '#1570CD',
   infoSoft: '#E4F0FC',
+
+  // Chart marks (validated against the light surface — see dataviz notes).
+  // Brand navy is an ink color, not a mark color; this is its chart-legible step.
+  chart: '#2F5DB3',
+  chartEmphasis: '#1E4489',
 } as const;
 
 /** Gradient pairs — use sparingly: hero headers and primary buttons only. */

@@ -48,7 +48,12 @@ export default function MoreScreen() {
       caption: 'Accidents, fines, damage — with photos',
       onPress: () => router.push('/incidents'),
     },
-    { icon: BarChart3, label: 'Reports', caption: 'Profitability, trends, rankings', soon: true },
+    {
+      icon: BarChart3,
+      label: 'Reports',
+      caption: 'Profitability, trends, rankings',
+      onPress: () => router.push('/reports'),
+    },
     {
       icon: Settings,
       label: 'Settings',
