@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CheckCircle2, Gauge, Lock, RefreshCw } from 'lucide-react-native';
+import { CheckCircle2, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -39,7 +39,6 @@ export default function TakingsEntry() {
   const [vehicleId, setVehicleId] = useState<string | null>(null);
   const [declared, setDeclared] = useState('');
   const [received, setReceived] = useState('');
-  const [odometer, setOdometer] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -63,14 +62,12 @@ export default function TakingsEntry() {
         setVehicleId(p.vehicle_id);
         setDeclared(String(p.amount_declared));
         setReceived(String(p.amount_received));
-        setOdometer(String(p.odometer_reading));
         setNotes(p.notes ?? '');
       } else if (serverRow) {
         setExisting(serverRow);
         setVehicleId(serverRow.vehicle_id);
         setDeclared(String(serverRow.amount_declared));
         setReceived(String(serverRow.amount_received));
-        setOdometer(String(serverRow.odometer_reading));
         setNotes(serverRow.notes ?? '');
       } else if (b.bundle) {
         setVehicleId(b.bundle.assignments[driverId] ?? null);
@@ -125,8 +122,6 @@ export default function TakingsEntry() {
     if (!vehicleId) errs.vehicle = 'Pick the taxi driven';
     if (!Number.isFinite(declaredNum) || declaredNum < 0) errs.declared = 'Enter the declared amount';
     if (!Number.isFinite(receivedNum) || receivedNum < 0) errs.received = 'Enter the cash received';
-    const odoNum = Number(odometer || 'NaN');
-    if (!Number.isInteger(odoNum) || odoNum <= 0) errs.odometer = 'Odometer reading is required';
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
@@ -139,7 +134,8 @@ export default function TakingsEntry() {
       amount_declared: declaredNum,
       amount_received: receivedNum,
       target_amount: existing ? existing.target_amount : targetAmount,
-      odometer_reading: odoNum,
+      // Odometer isn't captured at check-in anymore; keep any old value.
+      odometer_reading: existing?.odometer_reading ?? null,
       checkin_time: existing?.checkin_time ?? new Date().toISOString(),
       checkin_status: existing?.checkin_status ?? computeCheckinStatus(date),
       notes: notes.trim() || null,
@@ -295,21 +291,6 @@ export default function TakingsEntry() {
           </View>
         )}
 
-        <Input
-          label="Odometer (km)"
-          placeholder={vehicle ? `Last known ${vehicle.odometer_current.toLocaleString('en-US')}` : 'Reading'}
-          keyboardType="number-pad"
-          value={odometer}
-          onChangeText={setOdometer}
-          editable={!readOnly}
-          suffix={<Gauge color={colors.textMuted} size={20} />}
-          error={errors.odometer}
-          hint={
-            vehicle && Number(odometer) > 0 && Number(odometer) < vehicle.odometer_current
-              ? `Below last known reading (${vehicle.odometer_current.toLocaleString('en-US')} km) — double-check`
-              : undefined
-          }
-        />
         <Input
           label="Notes (optional)"
           placeholder="e.g. fuel receipt, variance reason"

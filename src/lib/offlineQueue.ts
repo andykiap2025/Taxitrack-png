@@ -28,7 +28,7 @@ export type TakingsUpsert = {
   amount_declared: number;
   amount_received: number;
   target_amount: number | null;
-  odometer_reading: number;
+  odometer_reading: number | null;
   checkin_time: string;
   checkin_status: CheckinStatus;
   notes: string | null;

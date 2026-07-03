@@ -83,7 +83,7 @@ export interface DailyTakings {
   target_met: boolean | null;
   shortfall_amount: number;
   surplus_amount: number;
-  odometer_reading: number;
+  odometer_reading: number | null;
   checkin_time: string | null;
   checkin_status: CheckinStatus;
   notes: string | null;
