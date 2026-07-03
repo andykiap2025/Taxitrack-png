@@ -99,7 +99,7 @@ export default function LoginScreen() {
             <Button title="Sign in" fullWidth onPress={submit} loading={busy} />
           </Card>
 
-          <Text style={styles.footer}>Skyworks Communication and Computing</Text>
+          <Text style={styles.footer}>Built by Skyworks Systems · © 2026</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>

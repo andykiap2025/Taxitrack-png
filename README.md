@@ -1,7 +1,7 @@
 # Safco Taxi Service 🚕
 
-Taxi fleet management for Port Moresby operators (project codename: TaxiTrack PNG) — built for **Skyworks
-Communication and Computing**.
+Taxi fleet management for Port Moresby operators (project codename: TaxiTrack PNG).
+Built by **Skyworks Systems** · © 2026.
 
 The owner leases taxis to drivers. Every night at 11pm the taxis check in at
 base and takings are recorded **against the driver** (no entry = didn't work =

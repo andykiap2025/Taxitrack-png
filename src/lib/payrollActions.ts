@@ -247,7 +247,7 @@ export function payslipHTML(input: {
   .foot { margin-top: 28px; font-size: 11px; color: #8B96A8; }
   </style></head><body>
   <div class="head">
-    <div><h1>Payslip · Safco Taxi Service</h1><div class="sub">Skyworks Communication and Computing · Port Moresby</div></div>
+    <div><h1>Payslip · Safco Taxi Service</h1><div class="sub">Port Moresby · Built by Skyworks Systems © 2026</div></div>
     <div class="badge">${input.status}</div>
   </div>
   <div class="meta">

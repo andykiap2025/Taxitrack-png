@@ -140,7 +140,7 @@ export default function MoreScreen() {
         onPress={confirmSignOut}
       />
 
-      <Text style={styles.version}>Safco Taxi Service v1.0.0 · Skyworks Communication and Computing</Text>
+      <Text style={styles.version}>Safco Taxi Service v1.0.0 · Built by Skyworks Systems · © 2026</Text>
     </Screen>
   );
 }

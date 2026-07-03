@@ -5,7 +5,7 @@ Technical ids keep the codename: slug taxitrack-png, package com.skyworks.taxitr
 
 ## What this is
 Taxi fleet management app for PNG taxi operators.
-Owner: Skyworks Communication and Computing.
+Owner/builder: Skyworks Systems (formerly written as Skyworks Communication and Computing). Attribution line: "Built by Skyworks Systems · © 2026".
 Full spec: ../TaxiTrack-PNG-Build-Plan.md · Design bar: ../Premium Mobile App Design Rules.pdf
 
 ## Stack

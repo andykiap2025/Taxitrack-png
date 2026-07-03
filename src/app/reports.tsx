@@ -347,7 +347,7 @@ function reportHTML(r: Report): string {
   .kpis b { display:block; font-size:18px; }
   </style></head><body>
   <div class="head"><h1>Fleet report · Safco Taxi Service</h1>
-  <div class="sub">${formatDate(r.range.start)} – ${formatDate(r.range.end)} · Skyworks Communication and Computing</div></div>
+  <div class="sub">${formatDate(r.range.start)} – ${formatDate(r.range.end)} · Built by Skyworks Systems © 2026</div></div>
   <div class="kpis">
     <div>Gross takings<b>${formatPGK(r.totals.gross)}</b></div>
     <div>Entries<b>${r.totals.entries}</b></div>
