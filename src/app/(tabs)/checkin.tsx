@@ -201,16 +201,16 @@ export default function CheckinScreen() {
 
   return (
     <Screen title="Check-in" titleAccessory={<SyncChip />}>
-      {/* Date navigator */}
-      <Card style={StyleSheet.flatten([styles.cardBase, styles.dateCard])}>
+      {/* Date navigator — brand navy, the anchor of the screen */}
+      <Card style={styles.dateCard}>
         <Pressable onPress={() => shiftDate(-1)} style={styles.dateBtn} hitSlop={8}>
-          <ChevronLeft color={colors.text} size={20} />
+          <ChevronLeft color="#FFFFFF" size={22} />
         </Pressable>
         <View style={styles.dateMiddle}>
           <Text style={styles.dateText}>
             {date === today ? 'Tonight' : formatDateLong(date)}
           </Text>
-          <Text style={type.caption}>
+          <Text style={styles.dateSub}>
             {recordedCount} of {drivers.length} recorded · {formatPGK(totalReceived)}
           </Text>
         </View>
@@ -220,7 +220,7 @@ export default function CheckinScreen() {
           hitSlop={8}
           disabled={date >= today}
         >
-          <ChevronRight color={date >= today ? colors.textMuted : colors.text} size={20} />
+          <ChevronRight color="#FFFFFF" size={22} />
         </Pressable>
       </Card>
 
@@ -255,7 +255,9 @@ export default function CheckinScreen() {
         <View style={styles.list}>
           {pendingDrivers.length > 0 && (
             <>
-              <Text style={styles.sectionHead}>Not checked in yet</Text>
+              <Text style={[styles.sectionHead, { color: STATUS.short.strip }]}>
+                Not checked in yet
+              </Text>
               {pendingDrivers.map((d) => (
                 <DriverRow key={d.id} d={d} />
               ))}
@@ -263,7 +265,7 @@ export default function CheckinScreen() {
           )}
           {recordedDrivers.length > 0 && (
             <>
-              <Text style={styles.sectionHead}>Checked in</Text>
+              <Text style={[styles.sectionHead, { color: STATUS.over.strip }]}>Checked in</Text>
               {recordedDrivers.map((d) => (
                 <DriverRow key={d.id} d={d} />
               ))}
@@ -295,28 +297,36 @@ const styles = StyleSheet.create({
   dateCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.primary,
+    borderWidth: 0,
+    borderRadius: 16,
   },
   dateBtn: {
-    width: 38,
-    height: 38,
+    width: 42,
+    height: 42,
     borderRadius: radius.full,
-    backgroundColor: '#EEF1F5',
+    backgroundColor: 'rgba(255,255,255,0.16)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   dateBtnDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   dateMiddle: {
     flex: 1,
     alignItems: 'center',
-    gap: 2,
+    gap: 3,
   },
   dateText: {
-    fontFamily: font.bold,
-    fontSize: 16,
-    color: colors.text,
+    fontFamily: font.extrabold,
+    fontSize: 21,
+    color: '#FFFFFF',
+  },
+  dateSub: {
+    fontFamily: font.medium,
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
   },
   offlineNote: {
     flexDirection: 'row',
