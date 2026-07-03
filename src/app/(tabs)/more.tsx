@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import React from 'react';
+import { useRouter } from 'expo-router';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Button, Card, Screen } from '@/components/ui';
@@ -24,6 +25,7 @@ type MenuItem = {
 
 export default function MoreScreen() {
   const { profile, role, signOut } = useAuth();
+  const router = useRouter();
 
   const initials = (profile?.full_name || '?')
     .split(' ')
@@ -35,7 +37,13 @@ export default function MoreScreen() {
   const items: MenuItem[] = [
     { icon: Wrench, label: 'Service & Compliance', caption: 'Servicing, rego, stickers, MVIL', soon: true },
     { icon: BarChart3, label: 'Reports', caption: 'Profitability, trends, rankings', soon: true },
-    { icon: Settings, label: 'Settings', caption: 'Rates, targets, policies', soon: true, ownerOnly: true },
+    {
+      icon: Settings,
+      label: 'Settings',
+      caption: 'Rates, targets, policies',
+      ownerOnly: true,
+      onPress: () => router.push('/settings'),
+    },
   ];
 
   const confirmSignOut = () => {
