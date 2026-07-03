@@ -43,7 +43,7 @@ import {
   openBalance,
 } from '@/lib/ledger';
 import { supabase } from '@/lib/supabase';
-import { colors, font, radius, spacing, type } from '@/lib/theme';
+import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
 import type {
   BalanceLedgerEntry,
   DailyTakings,
@@ -261,8 +261,10 @@ export default function DriverDetail() {
           {faceUrl ? (
             <Image source={{ uri: faceUrl }} style={styles.avatarPhoto} />
           ) : (
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{initialsOf(driver.full_name)}</Text>
+            <View style={[styles.avatar, { backgroundColor: identityColor(driver.id).soft }]}>
+              <Text style={[styles.avatarText, { color: identityColor(driver.id).strong }]}>
+                {initialsOf(driver.full_name)}
+              </Text>
             </View>
           )}
           <View style={styles.badges}>

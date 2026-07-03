@@ -15,7 +15,7 @@ import {
   type Period,
 } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
-import { colors, font, radius, spacing, type } from '@/lib/theme';
+import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
 import type {
   AppSettings,
   BalanceLedgerEntry,
@@ -229,8 +229,10 @@ export default function PayrollScreen() {
               }
             >
               <View style={styles.row}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{initialsOf(r.driver.full_name)}</Text>
+                <View style={[styles.avatar, { backgroundColor: identityColor(r.driver.id).soft }]}>
+                  <Text style={[styles.avatarText, { color: identityColor(r.driver.id).strong }]}>
+                    {initialsOf(r.driver.full_name)}
+                  </Text>
                 </View>
                 <View style={styles.info}>
                   <Text style={type.cardTitle}>{r.driver.full_name}</Text>

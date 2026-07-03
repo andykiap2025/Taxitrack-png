@@ -46,6 +46,26 @@ export const colors = {
   chartEmphasis: '#1E4489',
 } as const;
 
+/**
+ * Six-color identity palette: avatars and person/vehicle accents pick a
+ * stable color from these pairs (soft background + strong foreground).
+ */
+export const identityPalette = [
+  { soft: '#E4F0FC', strong: '#1570CD' }, // blue
+  { soft: '#E3F6EC', strong: '#12934F' }, // green
+  { soft: '#FCF0DA', strong: '#A96A0C' }, // amber
+  { soft: '#EFE9FC', strong: '#6D4FC4' }, // purple
+  { soft: '#FDE9EF', strong: '#C7285E' }, // rose
+  { soft: '#DFF4F4', strong: '#0E7F8A' }, // teal
+] as const;
+
+/** Deterministic color per id/name — the same driver always gets the same color. */
+export function identityColor(key: string): (typeof identityPalette)[number] {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return identityPalette[h % identityPalette.length];
+}
+
 /** Gradient pairs — use sparingly: hero headers and primary buttons only. */
 export const gradients = {
   hero: ['#16294F', '#0B1220'] as const,
@@ -98,22 +118,22 @@ export const shadow = {
   card: Platform.select<ViewStyle>({
     default: {
       shadowColor: '#101828',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.07,
-      shadowRadius: 14,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.12,
+      shadowRadius: 16,
+      elevation: 6,
     },
-    web: { boxShadow: '0 4px 14px rgba(16, 24, 40, 0.07)' } as ViewStyle,
+    web: { boxShadow: '0 6px 16px rgba(16, 24, 40, 0.10)' } as ViewStyle,
   })!,
   raised: Platform.select<ViewStyle>({
     default: {
       shadowColor: '#101828',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.12,
-      shadowRadius: 22,
-      elevation: 7,
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.18,
+      shadowRadius: 24,
+      elevation: 12,
     },
-    web: { boxShadow: '0 8px 22px rgba(16, 24, 40, 0.12)' } as ViewStyle,
+    web: { boxShadow: '0 10px 24px rgba(16, 24, 40, 0.14)' } as ViewStyle,
   })!,
   accentGlow: Platform.select<ViewStyle>({
     default: {

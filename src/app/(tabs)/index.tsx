@@ -28,7 +28,7 @@ import { formatDateLong, formatPGK, nowPOMMinutes, todayISO } from '@/lib/format
 import { initialsOf } from '@/lib/labels';
 import { subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
 import { supabase } from '@/lib/supabase';
-import { colors, font, gradients, radius, shadow, spacing, type } from '@/lib/theme';
+import { colors, font, gradients, identityColor, radius, shadow, spacing, type } from '@/lib/theme';
 import { serviceState } from '@/lib/service';
 import type { ComplianceDoc, DailyTakings, ServiceRecord, Vehicle } from '@/types/db';
 
@@ -315,7 +315,7 @@ function OwnerDashboard() {
                         : { backgroundColor: colors.successSoft }
                       : missed
                         ? { backgroundColor: colors.dangerSoft }
-                        : { backgroundColor: colors.surfaceMuted },
+                        : { backgroundColor: identityColor(d.id).soft },
                   ]}
                 >
                   {entry ? (
@@ -327,7 +327,9 @@ function OwnerDashboard() {
                   ) : missed ? (
                     <AlertTriangle color={colors.danger} size={16} />
                   ) : (
-                    <Text style={styles.rowInitials}>{initialsOf(d.full_name)}</Text>
+                    <Text style={[styles.rowInitials, { color: identityColor(d.id).strong }]}>
+                      {initialsOf(d.full_name)}
+                    </Text>
                   )}
                 </View>
                 <View style={styles.rowInfo}>

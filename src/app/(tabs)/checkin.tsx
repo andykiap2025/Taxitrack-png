@@ -23,7 +23,7 @@ import {
 import { formatDateLong, formatPGK } from '@/lib/format';
 import { initialsOf } from '@/lib/labels';
 import { flushQueue, subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
-import { colors, font, radius, spacing, type } from '@/lib/theme';
+import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
 import type { DailyTakings } from '@/types/db';
 
 type RowState =
@@ -188,6 +188,7 @@ export default function CheckinScreen() {
                   <View
                     style={[
                       styles.avatar,
+                      state.kind === 'pending' && { backgroundColor: identityColor(d.id).soft },
                       state.kind === 'recorded' && !state.queued && styles.avatarDone,
                       state.kind === 'recorded' && state.queued && styles.avatarQueued,
                     ]}
@@ -199,7 +200,9 @@ export default function CheckinScreen() {
                         <CheckCircle2 color={colors.success} size={20} />
                       )
                     ) : (
-                      <Text style={styles.avatarText}>{initialsOf(d.full_name)}</Text>
+                      <Text style={[styles.avatarText, { color: identityColor(d.id).strong }]}>
+                        {initialsOf(d.full_name)}
+                      </Text>
                     )}
                   </View>
                   <View style={styles.info}>
