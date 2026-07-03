@@ -121,10 +121,10 @@ export default function ComplianceScreen() {
         </>
       )}
 
-      <Card style={styles.serviceNote}>
-        <Wrench color={colors.textMuted} size={18} />
-        <Text style={[type.caption, styles.serviceText]}>
-          Vehicle servicing schedules (3 months / 5,000 km) arrive in the next update.
+      <Card style={styles.serviceNote} onPress={() => router.push('/service')}>
+        <Wrench color={colors.primary} size={18} />
+        <Text style={[type.bodyMedium, styles.serviceText]}>
+          Vehicle servicing — schedules, history and next-due tracking
         </Text>
       </Card>
     </Screen>

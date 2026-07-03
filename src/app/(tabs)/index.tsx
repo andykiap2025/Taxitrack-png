@@ -9,6 +9,7 @@ import {
   FileWarning,
   Moon,
   RefreshCw,
+  Wrench,
 } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -28,7 +29,8 @@ import { initialsOf } from '@/lib/labels';
 import { subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
 import { supabase } from '@/lib/supabase';
 import { colors, font, gradients, radius, shadow, spacing, type } from '@/lib/theme';
-import type { ComplianceDoc, DailyTakings } from '@/types/db';
+import { serviceState } from '@/lib/service';
+import type { ComplianceDoc, DailyTakings, ServiceRecord, Vehicle } from '@/types/db';
 
 type ExpiringDoc = ComplianceDoc & {
   vehicle: { plate_no: string } | null;
@@ -45,12 +47,13 @@ export default function Dashboard() {
   const [rows, setRows] = useState<DailyTakings[]>([]);
   const [queued, setQueued] = useState<QueuedItem[]>([]);
   const [expiring, setExpiring] = useState<ExpiringDoc[]>([]);
+  const [serviceDue, setServiceDue] = useState<{ vehicle: Vehicle; label: string; tone: 'danger' | 'warning' }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     const soon = new Date();
     soon.setDate(soon.getDate() + 30);
-    const [b, t, docs] = await Promise.all([
+    const [b, t, docs, svc] = await Promise.all([
       loadBundle(),
       loadTakingsForDate(date),
       supabase
@@ -59,10 +62,33 @@ export default function Dashboard() {
         .lte('expiry_date', soon.toISOString().slice(0, 10))
         .order('expiry_date')
         .limit(4),
+      supabase
+        .from('service_records')
+        .select('*')
+        .order('service_date', { ascending: false })
+        .limit(30),
     ]);
     setBundle(b.bundle);
     setRows(t.rows);
     if (!docs.error) setExpiring((docs.data ?? []) as unknown as ExpiringDoc[]);
+
+    if (!svc.error && b.bundle) {
+      const latest: Record<string, ServiceRecord> = {};
+      for (const rec of (svc.data ?? []) as ServiceRecord[]) {
+        if (!latest[rec.vehicle_id]) latest[rec.vehicle_id] = rec;
+      }
+      const due = b.bundle.vehicles
+        .map((v) => ({ vehicle: v, state: serviceState(v, latest[v.id] ?? null) }))
+        // "No record yet" only nags on the service screen, not the dashboard.
+        .filter((x) => x.state.needsAttention && latest[x.vehicle.id])
+        .slice(0, 3)
+        .map((x) => ({
+          vehicle: x.vehicle,
+          label: x.state.label,
+          tone: (x.state.tone === 'danger' ? 'danger' : 'warning') as 'danger' | 'warning',
+        }));
+      setServiceDue(due);
+    }
     setLoading(false);
   }, [date]);
 
@@ -208,6 +234,39 @@ export default function Dashboard() {
                   label={expiryLabel(doc.expiry_date)}
                   tone={toneForDays(daysUntil(doc.expiry_date))}
                 />
+              </Pressable>
+            ))}
+          </Card>
+        </>
+      )}
+
+      {serviceDue.length > 0 && (
+        <>
+          <Text style={type.sectionTitle}>Service due</Text>
+          <Card padded={false}>
+            {serviceDue.map((s, idx) => (
+              <Pressable
+                key={s.vehicle.id}
+                onPress={() => router.push('/service')}
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < serviceDue.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.rowIcon,
+                    { backgroundColor: s.tone === 'danger' ? colors.dangerSoft : colors.warningSoft },
+                  ]}
+                >
+                  <Wrench color={s.tone === 'danger' ? colors.danger : colors.warning} size={16} />
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>{s.vehicle.plate_no}</Text>
+                  <Text style={type.caption}>Tap to log or schedule the service</Text>
+                </View>
+                <Badge label={s.label} tone={s.tone} />
               </Pressable>
             ))}
           </Card>
