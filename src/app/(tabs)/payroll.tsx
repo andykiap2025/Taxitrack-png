@@ -3,10 +3,10 @@ import { Banknote, ChevronLeft, ChevronRight, ShieldAlert, Users } from 'lucide-
 import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Badge, Card, EmptyState, Screen, SkeletonCard, StatTile } from '@/components/ui';
+import { Card, EmptyState, Screen, SkeletonCard, StatTile } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatPGK, todayISO } from '@/lib/format';
-import { initialsOf } from '@/lib/labels';
+import { initialsOf, titleCase } from '@/lib/labels';
 import {
   computePayroll,
   dayOfPeriod,
@@ -15,7 +15,14 @@ import {
   type Period,
 } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
-import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
+import { colors, font, radius, spacing, type } from '@/lib/theme';
+
+// Status colors — pills only.
+const PILL = {
+  paid: { bg: '#DCFCE7', fg: '#16A34A', label: 'Paid' },
+  finalised: { bg: '#E7EBF5', fg: colors.primary, label: 'Finalised' },
+  preview: { bg: '#EEF1F5', fg: '#6B7280', label: 'Preview' },
+} as const;
 import type {
   AppSettings,
   BalanceLedgerEntry,
@@ -154,21 +161,21 @@ export default function PayrollScreen() {
   const totalGross = rows.reduce((s, r) => s + r.grossTakings, 0);
 
   return (
-    <Screen title="Payroll">
-      {/* Period navigator */}
+    <Screen title="Payroll" style={styles.content}>
+      {/* Period navigator — brand navy anchor, same pattern as Check-in */}
       <Card style={styles.periodCard}>
         <Pressable
           onPress={() => period && load(shiftPeriod(period, -1))}
           style={styles.navBtn}
           hitSlop={8}
         >
-          <ChevronLeft color={colors.text} size={20} />
+          <ChevronLeft color="#FFFFFF" size={22} />
         </Pressable>
         <View style={styles.periodMiddle}>
           <Text style={styles.periodText}>
             {period ? `${formatDate(period.start)} – ${formatDate(period.end)}` : '…'}
           </Text>
-          <Text style={type.caption}>
+          <Text style={styles.periodSub}>
             {isCurrent && period
               ? `Current fortnight · day ${dayOfPeriod(today, period)} of 14`
               : 'Fortnight'}
@@ -176,11 +183,11 @@ export default function PayrollScreen() {
         </View>
         <Pressable
           onPress={() => period && load(shiftPeriod(period, 1))}
-          style={[styles.navBtn, isCurrent && { opacity: 0.4 }]}
+          style={[styles.navBtn, isCurrent && { opacity: 0.35 }]}
           hitSlop={8}
           disabled={isCurrent}
         >
-          <ChevronRight color={colors.text} size={20} />
+          <ChevronRight color="#FFFFFF" size={22} />
         </Pressable>
       </Card>
 
@@ -220,7 +227,7 @@ export default function PayrollScreen() {
           {rows.map((r) => (
             <Card
               key={r.driver.id}
-              tint={identityColor(r.driver.id).soft}
+              style={styles.cardBase}
               onPress={() =>
                 period &&
                 router.push({
@@ -230,24 +237,22 @@ export default function PayrollScreen() {
               }
             >
               <View style={styles.row}>
-                <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
-                  <Text style={[styles.avatarText, { color: identityColor(r.driver.id).strong }]}>
-                    {initialsOf(r.driver.full_name)}
-                  </Text>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{initialsOf(r.driver.full_name)}</Text>
                 </View>
                 <View style={styles.info}>
-                  <Text style={type.cardTitle}>{r.driver.full_name}</Text>
+                  <Text style={type.cardTitle}>{titleCase(r.driver.full_name)}</Text>
                   <Text style={type.caption}>
                     {r.daysWorked} days · gross {formatPGK(r.grossTakings, { decimals: 0 })}
                   </Text>
                 </View>
                 <View style={styles.right}>
                   <Text style={styles.net}>{formatPGK(r.netPay)}</Text>
-                  <Badge
-                    label={r.status === 'paid' ? 'Paid' : r.status === 'finalised' ? 'Finalised' : 'Preview'}
-                    tone={r.status === 'paid' ? 'success' : r.status === 'finalised' ? 'info' : 'neutral'}
-                    dot={r.status !== 'preview'}
-                  />
+                  <View style={[styles.pill, { backgroundColor: PILL[r.status].bg }]}>
+                    <Text style={[styles.pillText, { color: PILL[r.status].fg }]}>
+                      {PILL[r.status].label}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </Card>
@@ -259,28 +264,47 @@ export default function PayrollScreen() {
 }
 
 const styles = StyleSheet.create({
+  content: {
+    width: '100%',
+    maxWidth: 640,
+    alignSelf: 'center',
+  },
+  cardBase: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 0.5,
+    borderColor: '#E5E8EC',
+    borderRadius: 14,
+  },
   periodCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.primary,
+    borderWidth: 0,
+    borderRadius: 16,
   },
   navBtn: {
-    width: 38,
-    height: 38,
+    width: 42,
+    height: 42,
     borderRadius: radius.full,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: 'rgba(255,255,255,0.16)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   periodMiddle: {
     flex: 1,
     alignItems: 'center',
-    gap: 2,
+    gap: 3,
   },
   periodText: {
-    fontFamily: font.bold,
-    fontSize: 15,
-    color: colors.text,
+    fontFamily: font.extrabold,
+    fontSize: 18,
+    color: '#FFFFFF',
+  },
+  periodSub: {
+    fontFamily: font.medium,
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
   },
   tiles: {
     flexDirection: 'row',
@@ -295,17 +319,26 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   avatar: {
-    width: 46,
-    height: 46,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
-    backgroundColor: colors.infoSoft,
+    backgroundColor: '#EEF1F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontFamily: font.bold,
-    fontSize: 15,
-    color: colors.info,
+    fontSize: 14,
+    color: '#4B5563',
+  },
+  pill: {
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  pillText: {
+    fontFamily: font.semibold,
+    fontSize: 12,
   },
   info: {
     flex: 1,
