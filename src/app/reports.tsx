@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   divider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   rank: {

@@ -17,8 +17,10 @@ export const colors = {
   onAccent: '#231303',
 
   // Surfaces
-  background: '#F4F6FA',
+  background: '#EAEEF5',
   surface: '#FFFFFF',
+  /** Card faces: a whisper of blue so cards read as tinted panels. */
+  card: '#FAFBFF',
   surfaceMuted: '#EDF1F7',
   border: '#E3E8F0',
   borderStrong: '#C9D2E0',
@@ -118,22 +120,22 @@ export const shadow = {
   card: Platform.select<ViewStyle>({
     default: {
       shadowColor: '#101828',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.12,
-      shadowRadius: 16,
-      elevation: 6,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.16,
+      shadowRadius: 18,
+      elevation: 8,
     },
-    web: { boxShadow: '0 6px 16px rgba(16, 24, 40, 0.10)' } as ViewStyle,
+    web: { boxShadow: '0 8px 20px rgba(16, 24, 40, 0.13)' } as ViewStyle,
   })!,
   raised: Platform.select<ViewStyle>({
     default: {
       shadowColor: '#101828',
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.18,
-      shadowRadius: 24,
-      elevation: 12,
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.22,
+      shadowRadius: 28,
+      elevation: 14,
     },
-    web: { boxShadow: '0 10px 24px rgba(16, 24, 40, 0.14)' } as ViewStyle,
+    web: { boxShadow: '0 12px 28px rgba(16, 24, 40, 0.18)' } as ViewStyle,
   })!,
   accentGlow: Platform.select<ViewStyle>({
     default: {

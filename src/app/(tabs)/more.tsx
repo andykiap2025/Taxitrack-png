@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   menuDivider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   menuPressed: {

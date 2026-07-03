@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   dividerLine: {
-    height: StyleSheet.hairlineWidth,
+    height: 1,
     backgroundColor: colors.border,
     marginVertical: spacing.xs,
   },

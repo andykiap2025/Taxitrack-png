@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   divider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   docIcon: {

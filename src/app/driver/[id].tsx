@@ -717,7 +717,7 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   divider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   optionList: {

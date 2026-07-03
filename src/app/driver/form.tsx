@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   provinceRow: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xs,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
 });
