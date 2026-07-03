@@ -37,6 +37,14 @@ const users = [
     full_name: process.env.SUPERVISOR_NAME ?? 'Supervisor',
     role: 'supervisor',
   },
+  // Optional: a driver login (link it to a driver in the app afterwards —
+  // Fleet → driver → edit → "App login").
+  {
+    email: process.env.DRIVER_EMAIL,
+    password: process.env.DRIVER_PASSWORD,
+    full_name: process.env.DRIVER_NAME ?? 'Driver',
+    role: 'driver',
+  },
 ].filter((u) => u.email && u.password);
 
 if (users.length === 0) {

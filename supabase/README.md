@@ -51,3 +51,20 @@ node scripts/create-users.mjs
 3. Restart the Expo dev server.
 
 Done. Log in with the owner email/password from step 4.
+
+## 6. Driver logins (optional, any time later)
+
+Drivers can get a read-only login that shows their own takings, fortnight
+estimate and payslips:
+
+1. Re-run the step-4 command with driver details instead:
+
+```powershell
+$env:SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+$env:SUPABASE_SERVICE_ROLE_KEY = "PASTE-SERVICE-ROLE-KEY"
+$env:DRIVER_EMAIL = "driver@example.com"; $env:DRIVER_PASSWORD = "a-password"; $env:DRIVER_NAME = "John Kaupa"
+node scripts/create-users.mjs
+```
+
+2. In the app (as owner): **Fleet → Drivers → tap the driver → pencil icon →
+   App login** → pick the new account → Save.

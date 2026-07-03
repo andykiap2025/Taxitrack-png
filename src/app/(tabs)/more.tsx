@@ -21,6 +21,7 @@ type MenuItem = {
   caption: string;
   soon?: boolean;
   ownerOnly?: boolean;
+  staffOnly?: boolean;
   onPress?: () => void;
 };
 
@@ -40,18 +41,21 @@ export default function MoreScreen() {
       icon: Wrench,
       label: 'Service & Compliance',
       caption: 'Rego, stickers, MVIL, licenses',
+      staffOnly: true,
       onPress: () => router.push('/compliance'),
     },
     {
       icon: Siren,
       label: 'Incidents',
       caption: 'Accidents, fines, damage — with photos',
+      staffOnly: true,
       onPress: () => router.push('/incidents'),
     },
     {
       icon: BarChart3,
       label: 'Reports',
       caption: 'Profitability, trends, rankings',
+      staffOnly: true,
       onPress: () => router.push('/reports'),
     },
     {
@@ -74,6 +78,10 @@ export default function MoreScreen() {
     ]);
   };
 
+  const visibleItems = items
+    .filter((i) => !i.ownerOnly || role === 'owner')
+    .filter((i) => !i.staffOnly || role === 'owner' || role === 'supervisor');
+
   return (
     <Screen title="More">
       <Card>
@@ -91,10 +99,9 @@ export default function MoreScreen() {
         </View>
       </Card>
 
+      {visibleItems.length > 0 && (
       <Card padded={false}>
-        {items
-          .filter((i) => !i.ownerOnly || role === 'owner')
-          .map((item, idx, arr) => {
+        {visibleItems.map((item, idx, arr) => {
             const Icon = item.icon;
             return (
               <Pressable
@@ -123,6 +130,7 @@ export default function MoreScreen() {
             );
           })}
       </Card>
+      )}
 
       <Button
         title="Sign out"

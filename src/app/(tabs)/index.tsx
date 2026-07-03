@@ -14,6 +14,7 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { DriverHome } from '@/components/DriverHome';
 import { SyncChip } from '@/components/SyncChip';
 import { Badge, Button, Card, Screen, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,7 +38,13 @@ type ExpiringDoc = ComplianceDoc & {
   driver: { full_name: string } | null;
 };
 
-export default function Dashboard() {
+export default function HomeScreen() {
+  const { role } = useAuth();
+  // Swap whole components so hook order stays stable across role changes.
+  return role === 'driver' ? <DriverHome /> : <OwnerDashboard />;
+}
+
+function OwnerDashboard() {
   const { profile } = useAuth();
   const router = useRouter();
   const firstName = profile?.full_name?.split(' ')[0] || 'there';
