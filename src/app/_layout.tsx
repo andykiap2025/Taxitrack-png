@@ -6,14 +6,41 @@ import {
   Inter_800ExtraBold,
   useFonts,
 } from '@expo-google-fonts/inter';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { colors } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
+
+function RootNavigator() {
+  const { session, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  // Auth gate: signed-out users only ever see /login.
+  useEffect(() => {
+    if (loading) return;
+    const onLogin = segments[0] === 'login';
+    if (!session && !onLogin) {
+      router.replace('/login');
+    } else if (session && onLogin) {
+      router.replace('/');
+    }
+  }, [session, loading, segments, router]);
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    />
+  );
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -31,14 +58,9 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      />
-    </>
+      <RootNavigator />
+    </AuthProvider>
   );
 }
