@@ -35,7 +35,12 @@ export default function MoreScreen() {
     .toUpperCase();
 
   const items: MenuItem[] = [
-    { icon: Wrench, label: 'Service & Compliance', caption: 'Servicing, rego, stickers, MVIL', soon: true },
+    {
+      icon: Wrench,
+      label: 'Service & Compliance',
+      caption: 'Rego, stickers, MVIL, licenses',
+      onPress: () => router.push('/compliance'),
+    },
     { icon: BarChart3, label: 'Reports', caption: 'Profitability, trends, rankings', soon: true },
     {
       icon: Settings,

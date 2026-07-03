@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   ChevronRight,
   ClipboardCheck,
+  FileWarning,
   Moon,
   RefreshCw,
 } from 'lucide-react-native';
@@ -15,6 +16,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SyncChip } from '@/components/SyncChip';
 import { Badge, Button, Card, Screen, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
 import {
   defaultBusinessDate,
   loadBundle,
@@ -24,8 +26,14 @@ import {
 import { formatDateLong, formatPGK, nowPOMMinutes, todayISO } from '@/lib/format';
 import { initialsOf } from '@/lib/labels';
 import { subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
+import { supabase } from '@/lib/supabase';
 import { colors, font, gradients, radius, shadow, spacing, type } from '@/lib/theme';
-import type { DailyTakings } from '@/types/db';
+import type { ComplianceDoc, DailyTakings } from '@/types/db';
+
+type ExpiringDoc = ComplianceDoc & {
+  vehicle: { plate_no: string } | null;
+  driver: { full_name: string } | null;
+};
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -36,12 +44,25 @@ export default function Dashboard() {
   const [bundle, setBundle] = useState<CheckinBundle | null>(null);
   const [rows, setRows] = useState<DailyTakings[]>([]);
   const [queued, setQueued] = useState<QueuedItem[]>([]);
+  const [expiring, setExpiring] = useState<ExpiringDoc[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const [b, t] = await Promise.all([loadBundle(), loadTakingsForDate(date)]);
+    const soon = new Date();
+    soon.setDate(soon.getDate() + 30);
+    const [b, t, docs] = await Promise.all([
+      loadBundle(),
+      loadTakingsForDate(date),
+      supabase
+        .from('compliance_docs')
+        .select('*, vehicle:vehicles(plate_no), driver:drivers(full_name)')
+        .lte('expiry_date', soon.toISOString().slice(0, 10))
+        .order('expiry_date')
+        .limit(4),
+    ]);
     setBundle(b.bundle);
     setRows(t.rows);
+    if (!docs.error) setExpiring((docs.data ?? []) as unknown as ExpiringDoc[]);
     setLoading(false);
   }, [date]);
 
@@ -153,6 +174,40 @@ export default function Dashboard() {
                   <Text style={type.caption}>Handed in {formatPGK(entry.received)}</Text>
                 </View>
                 <Badge label={`Short ${formatPGK(entry.shortfall, { decimals: 0 })}`} tone="danger" />
+              </Pressable>
+            ))}
+          </Card>
+        </>
+      )}
+
+      {expiring.length > 0 && (
+        <>
+          <Text style={type.sectionTitle}>Expiring soon</Text>
+          <Card padded={false}>
+            {expiring.map((doc, idx) => (
+              <Pressable
+                key={doc.id}
+                onPress={() => router.push('/compliance')}
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < expiring.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View style={[styles.rowIcon, { backgroundColor: colors.warningSoft }]}>
+                  <FileWarning color={colors.warning} size={17} />
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>
+                    {DOC_TYPE_LABELS[doc.doc_type] ?? doc.doc_type} ·{' '}
+                    {doc.vehicle?.plate_no ?? doc.driver?.full_name ?? '—'}
+                  </Text>
+                  <Text style={type.caption}>Tap to renew in Compliance</Text>
+                </View>
+                <Badge
+                  label={expiryLabel(doc.expiry_date)}
+                  tone={toneForDays(daysUntil(doc.expiry_date))}
+                />
               </Pressable>
             ))}
           </Card>
