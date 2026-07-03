@@ -247,7 +247,7 @@ export function payslipHTML(input: {
   .foot { margin-top: 28px; font-size: 11px; color: #8B96A8; }
   </style></head><body>
   <div class="head">
-    <div><h1>Payslip · TaxiTrack PNG</h1><div class="sub">Skyworks Communication and Computing · Port Moresby</div></div>
+    <div><h1>Payslip · Safco Taxi Service</h1><div class="sub">Skyworks Communication and Computing · Port Moresby</div></div>
     <div class="badge">${input.status}</div>
   </div>
   <div class="meta">
@@ -270,7 +270,7 @@ export function payslipHTML(input: {
     ${row('NET PAY', formatPGK(comp.netPay), 'total')}
   </table>
   <div class="sig"><div>Driver signature</div><div>Owner signature</div></div>
-  <div class="foot">Generated ${formatDateLong(new Date())} · TaxiTrack PNG</div>
+  <div class="foot">Generated ${formatDateLong(new Date())} · Safco Taxi Service</div>
   </body></html>`;
 }
 

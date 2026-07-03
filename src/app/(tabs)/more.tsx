@@ -72,7 +72,7 @@ export default function MoreScreen() {
       signOut();
       return;
     }
-    Alert.alert('Sign out', 'Sign out of TaxiTrack PNG?', [
+    Alert.alert('Sign out', 'Sign out of Safco Taxi Service?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign out', style: 'destructive', onPress: () => signOut() },
     ]);
@@ -140,7 +140,7 @@ export default function MoreScreen() {
         onPress={confirmSignOut}
       />
 
-      <Text style={styles.version}>TaxiTrack PNG v1.0.0 · Skyworks Communication and Computing</Text>
+      <Text style={styles.version}>Safco Taxi Service v1.0.0 · Skyworks Communication and Computing</Text>
     </Screen>
   );
 }

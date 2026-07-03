@@ -1,4 +1,4 @@
-# Setting up the TaxiTrack PNG backend (one-time, ~10 minutes)
+# Setting up the Safco Taxi Service backend (one-time, ~10 minutes)
 
 The app stores all its data in a free [Supabase](https://supabase.com) project.
 Follow these steps once; after that the app just works.

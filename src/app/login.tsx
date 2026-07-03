@@ -55,7 +55,7 @@ export default function LoginScreen() {
             <View style={styles.logo}>
               <CarTaxiFront color={colors.accent} size={40} />
             </View>
-            <Text style={styles.title}>TaxiTrack PNG</Text>
+            <Text style={styles.title}>Safco Taxi Service</Text>
             <Text style={styles.subtitle}>Fleet management · Port Moresby</Text>
           </View>
 

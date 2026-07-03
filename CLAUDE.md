@@ -1,5 +1,8 @@
 # TaxiTrack PNG — Claude Code Anchor
 
+Display name: **Safco Taxi Service** (all user-visible branding).
+Technical ids keep the codename: slug taxitrack-png, package com.skyworks.taxitrackpng.
+
 ## What this is
 Taxi fleet management app for PNG taxi operators.
 Owner: Skyworks Communication and Computing.
