@@ -62,7 +62,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
               accessibilityState={{ selected: active }}
             >
               <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
-                <Icon size={21} color={active ? colors.onPrimary : colors.textMuted} />
+                <Icon size={21} color={active ? colors.onAccent : colors.textOnDarkMuted} />
               </View>
               <Text style={[styles.label, active && styles.labelActive]}>{tab.label}</Text>
             </Pressable>
@@ -84,10 +84,10 @@ const styles = StyleSheet.create({
   },
   bar: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     borderRadius: radius.xl,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    borderColor: 'rgba(255,255,255,0.10)',
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.xs,
   },
@@ -108,14 +108,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconWrapActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
   },
   label: {
     fontFamily: font.semibold,
     fontSize: 11,
-    color: colors.textMuted,
+    color: colors.textOnDarkMuted,
   },
   labelActive: {
-    color: colors.primary,
+    color: colors.textOnDark,
   },
 });
