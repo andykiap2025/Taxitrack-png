@@ -19,6 +19,32 @@ export const VEHICLE_CLASS: Record<VehicleClass, string> = {
   new: 'Newer',
 };
 
+/** The 22 provinces of Papua New Guinea. */
+export const PNG_PROVINCES = [
+  'Bougainville (AROB)',
+  'Central',
+  'Chimbu (Simbu)',
+  'East New Britain',
+  'East Sepik',
+  'Eastern Highlands',
+  'Enga',
+  'Gulf',
+  'Hela',
+  'Jiwaka',
+  'Madang',
+  'Manus',
+  'Milne Bay',
+  'Morobe',
+  'National Capital District',
+  'New Ireland',
+  'Northern (Oro)',
+  'Southern Highlands',
+  'West New Britain',
+  'West Sepik (Sandaun)',
+  'Western',
+  'Western Highlands',
+] as const;
+
 export function initialsOf(name: string): string {
   return name
     .split(' ')

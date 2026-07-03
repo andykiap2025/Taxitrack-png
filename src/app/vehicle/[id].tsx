@@ -9,7 +9,7 @@ import {
   Wrench,
 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   Badge,
@@ -22,6 +22,7 @@ import {
   StatTile,
 } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import { useSignedUrl } from '@/hooks/useSignedUrl';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
 import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
 import { formatDate, formatPGK, todayISO } from '@/lib/format';
@@ -92,6 +93,7 @@ export default function VehicleDetail() {
 
   const vehicle = q.data?.vehicle;
   const openDowntime = q.data?.downtime.find((d) => !d.end_date);
+  const photoUrl = useSignedUrl('fleet-photos', vehicle?.photo_url);
 
   const markOffRoad = async () => {
     if (!vehicle) return;
@@ -161,6 +163,8 @@ export default function VehicleDetail() {
         }
       />
 
+      {photoUrl && <Image source={{ uri: photoUrl }} style={styles.photoBanner} />}
+
       <Card>
         <View style={styles.badgeRow}>
           <Badge label={status.label} tone={status.tone} dot />
@@ -183,6 +187,9 @@ export default function VehicleDetail() {
             icon={<Gauge color={colors.primary} size={18} />}
           />
         </View>
+        {vehicle.engine_no ? (
+          <Text style={styles.engineNo}>Engine no. {vehicle.engine_no}</Text>
+        ) : null}
         {isOwner &&
           (vehicle.status === 'active' ? (
             <Button
@@ -328,6 +335,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  photoBanner: {
+    width: '100%',
+    height: 170,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surfaceMuted,
+  },
+  engineNo: {
+    ...type.caption,
     marginBottom: spacing.md,
   },
   tileRow: {

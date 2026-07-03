@@ -37,6 +37,8 @@ export interface Vehicle {
   daily_target: number;
   odometer_current: number;
   status: VehicleStatus;
+  photo_url: string | null;
+  engine_no: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -50,6 +52,10 @@ export interface Driver {
   status: DriverStatus;
   date_started: string | null;
   user_id: string | null;
+  photo_url: string | null;
+  license_photo_url: string | null;
+  province: string | null;
+  residence: string | null;
   created_at: string;
   updated_at: string;
 }

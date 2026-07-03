@@ -1,11 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import {
   ArrowDownCircle,
   ArrowLeftRight,
   ArrowUpCircle,
   CalendarDays,
   CarFront,
+  Home,
   IdCard,
+  ImageIcon,
+  MapPin,
   MinusCircle,
   Pencil,
   Phone,
@@ -13,7 +17,7 @@ import {
   Scale,
 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
   Badge,
@@ -26,7 +30,9 @@ import {
   SkeletonCard,
 } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
+import { useSignedUrl } from '@/hooks/useSignedUrl';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
+import { signedUrl } from '@/lib/storage';
 import { daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
 import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
 import { DRIVER_STATUS, initialsOf } from '@/lib/labels';
@@ -147,6 +153,13 @@ export default function DriverDetail() {
 
   const driver = q.data?.driver;
   const current = q.data?.assignments.find((a) => !a.end_date) ?? null;
+  const faceUrl = useSignedUrl('fleet-photos', driver?.photo_url);
+
+  const viewLicensePhoto = async () => {
+    if (!driver?.license_photo_url) return;
+    const url = await signedUrl('fleet-photos', driver.license_photo_url);
+    if (url) await WebBrowser.openBrowserAsync(url);
+  };
 
   const assign = async (vehicleId: string | null) => {
     if (!driver) return;
@@ -245,9 +258,13 @@ export default function DriverDetail() {
       {/* Profile */}
       <Card>
         <View style={styles.profileRow}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initialsOf(driver.full_name)}</Text>
-          </View>
+          {faceUrl ? (
+            <Image source={{ uri: faceUrl }} style={styles.avatarPhoto} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initialsOf(driver.full_name)}</Text>
+            </View>
+          )}
           <View style={styles.badges}>
             <Badge label={status.label} tone={status.tone} dot />
             {driver.license_expiry ? (
@@ -261,8 +278,26 @@ export default function DriverDetail() {
           </View>
         </View>
         <View style={styles.infoRows}>
-          <InfoRow icon={<IdCard color={colors.textSecondary} size={17} />} label="License" value={driver.license_no ?? '—'} />
+          <View style={styles.licenseRow}>
+            <InfoRow icon={<IdCard color={colors.textSecondary} size={17} />} label="License" value={driver.license_no ?? '—'} />
+            {driver.license_photo_url && (
+              <Pressable onPress={viewLicensePhoto} style={styles.licensePhotoBtn} hitSlop={8}>
+                <ImageIcon color={colors.info} size={16} />
+                <Text style={styles.licensePhotoText}>View</Text>
+              </Pressable>
+            )}
+          </View>
           <InfoRow icon={<Phone color={colors.textSecondary} size={17} />} label="Phone" value={driver.phone ?? '—'} />
+          <InfoRow
+            icon={<MapPin color={colors.textSecondary} size={17} />}
+            label="Province"
+            value={driver.province ?? '—'}
+          />
+          <InfoRow
+            icon={<Home color={colors.textSecondary} size={17} />}
+            label="Lives at"
+            value={driver.residence ?? '—'}
+          />
           <InfoRow
             icon={<CalendarDays color={colors.textSecondary} size={17} />}
             label="Started"
@@ -564,6 +599,31 @@ const styles = StyleSheet.create({
   avatarText: {
     fontFamily: font.bold,
     fontSize: 18,
+    color: colors.info,
+  },
+  avatarPhoto: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceMuted,
+  },
+  licenseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  licensePhotoBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.infoSoft,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+  },
+  licensePhotoText: {
+    fontFamily: font.semibold,
+    fontSize: 12,
     color: colors.info,
   },
   badges: {
