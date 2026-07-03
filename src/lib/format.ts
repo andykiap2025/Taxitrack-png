@@ -3,7 +3,7 @@
  * currency "K1,234.50", dates DD/MM/YYYY, timezone Pacific/Port_Moresby.
  * The business day is always the Port Moresby calendar date.
  */
-import { format, parseISO } from 'date-fns';
+import { format, isValid, parse, parseISO } from 'date-fns';
 
 export const TIMEZONE = 'Pacific/Port_Moresby';
 
@@ -68,6 +68,14 @@ export function nowPOMMinutes(now: Date = new Date()): number {
   const h = Number(parts.find((p) => p.type === 'hour')?.value ?? 0);
   const m = Number(parts.find((p) => p.type === 'minute')?.value ?? 0);
   return h * 60 + m;
+}
+
+/** Parse "25/12/2026" (DD/MM/YYYY) → "2026-12-25", or null if invalid. */
+export function parseDMY(input: string): string | null {
+  const trimmed = input.trim();
+  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmed)) return null;
+  const parsed = parse(trimmed, 'dd/MM/yyyy', new Date());
+  return isValid(parsed) ? format(parsed, 'yyyy-MM-dd') : null;
 }
 
 /** "+675 7XXX XXXX" — best-effort formatting, never rejects input. */

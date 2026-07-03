@@ -3,6 +3,7 @@ import { CarFront, Plus, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { DriverCard, type DriverWithAssignment } from '@/components/DriverCard';
 import { VehicleCard } from '@/components/VehicleCard';
 import {
   Card,
@@ -28,13 +29,20 @@ export default function FleetScreen() {
     () => supabase.from('vehicles').select('*').order('plate_no'),
   );
 
+  const drivers = useSupabaseQuery<DriverWithAssignment[]>(
+    () =>
+      supabase
+        .from('drivers')
+        .select('*, assignments(id, end_date, vehicle:vehicles(id, plate_no))')
+        .is('assignments.end_date', null)
+        .order('full_name'),
+  );
+
   const canEdit = role === 'owner';
 
   const addButton = canEdit ? (
     <Pressable
-      onPress={() =>
-        section === 'vehicles' ? router.push('/vehicle/form') : undefined
-      }
+      onPress={() => router.push(section === 'vehicles' ? '/vehicle/form' : '/driver/form')}
       style={({ pressed }) => [styles.addBtn, shadow.accentGlow, pressed && styles.addPressed]}
       accessibilityRole="button"
       accessibilityLabel={section === 'vehicles' ? 'Add vehicle' : 'Add driver'}
@@ -81,13 +89,31 @@ export default function FleetScreen() {
           )}
         </View>
       ) : (
-        <Card padded={false}>
-          <EmptyState
-            icon={<Users color={colors.textMuted} size={30} />}
-            title="Drivers"
-            message="Driver management arrives in Phase 5."
-          />
-        </Card>
+        <View style={styles.list}>
+          {drivers.loading ? (
+            <>
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
+          ) : drivers.error ? (
+            <Card>
+              <Text style={type.body}>Couldn't load drivers: {drivers.error}</Text>
+            </Card>
+          ) : !drivers.data || drivers.data.length === 0 ? (
+            <Card padded={false}>
+              <EmptyState
+                icon={<Users color={colors.textMuted} size={30} />}
+                title="No drivers yet"
+                message="Add drivers to assign them to taxis and record their takings."
+                actionLabel={canEdit ? 'Add driver' : undefined}
+                onAction={canEdit ? () => router.push('/driver/form') : undefined}
+              />
+            </Card>
+          ) : (
+            drivers.data.map((d) => <DriverCard key={d.id} driver={d} />)
+          )}
+        </View>
       )}
     </Screen>
   );
