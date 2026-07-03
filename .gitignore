@@ -44,3 +44,7 @@ example
 
 # local env with Supabase keys
 .env
+
+# Android signing key — never commit, BACK THESE UP
+credentials.json
+credentials/
