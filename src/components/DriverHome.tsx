@@ -1,9 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { CarTaxiFront, FileText, UserX } from 'lucide-react-native';
+import { FileText, UserX } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Card, EmptyState, Screen, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
@@ -128,9 +128,10 @@ export function DriverHome() {
               {period ? `Fortnight day ${dayOfPeriod(todayISO(), period)} of 14` : ''}
             </Text>
           </View>
-          <View style={styles.heroLogo}>
-            <CarTaxiFront color={colors.accent} size={24} />
-          </View>
+          <Image
+            source={require('@/assets/play_store/icon_main_512x512.png')}
+            style={styles.heroLogo}
+          />
         </View>
         <View style={styles.heroStats}>
           <View style={styles.heroStat}>
@@ -246,9 +247,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
   },
   heroStats: {
     backgroundColor: 'rgba(255,255,255,0.08)',

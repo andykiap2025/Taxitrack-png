@@ -2,7 +2,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import {
   AlertTriangle,
-  CarTaxiFront,
   CheckCircle2,
   ChevronRight,
   ClipboardCheck,
@@ -12,7 +11,7 @@ import {
   Wrench,
 } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DriverHome } from '@/components/DriverHome';
 import { SyncChip } from '@/components/SyncChip';
@@ -153,9 +152,10 @@ function OwnerDashboard() {
             <Text style={styles.heroGreeting}>Hi {firstName} 👋</Text>
             <Text style={styles.heroDate}>{formatDateLong(date)} · Port Moresby</Text>
           </View>
-          <View style={styles.heroLogo}>
-            <CarTaxiFront color={colors.accent} size={24} />
-          </View>
+          <Image
+            source={require('@/assets/play_store/icon_main_512x512.png')}
+            style={styles.heroLogo}
+          />
         </View>
         <View style={styles.heroStats}>
           <View style={styles.heroStat}>
@@ -389,9 +389,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
   },
   heroStats: {
     flexDirection: 'row',

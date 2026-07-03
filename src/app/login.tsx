@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { CarTaxiFront, Lock, Mail } from 'lucide-react-native';
+import { Lock, Mail } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -53,7 +54,10 @@ export default function LoginScreen() {
         >
           <View style={styles.brand}>
             <View style={styles.logo}>
-              <CarTaxiFront color={colors.accent} size={40} />
+              <Image
+                source={require('@/assets/play_store/icon_main_512x512.png')}
+                style={styles.logoImg}
+              />
             </View>
             <Text style={styles.title}>Safco Taxi Service</Text>
             <Text style={styles.subtitle}>Fleet management · Port Moresby</Text>
@@ -116,16 +120,17 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   logo: {
-    width: 84,
-    height: 84,
+    width: 92,
+    height: 92,
     borderRadius: radius.xl,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
     marginBottom: spacing.xs,
     ...shadow.raised,
+  },
+  logoImg: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontFamily: font.extrabold,
