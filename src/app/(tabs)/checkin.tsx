@@ -180,19 +180,13 @@ export default function CheckinScreen() {
             return (
               <Card
                 key={d.id}
+                tint={identityColor(d.id).soft}
                 onPress={() =>
                   router.push({ pathname: '/takings/entry', params: { driverId: d.id, date } })
                 }
               >
                 <View style={styles.row}>
-                  <View
-                    style={[
-                      styles.avatar,
-                      state.kind === 'pending' && { backgroundColor: identityColor(d.id).soft },
-                      state.kind === 'recorded' && !state.queued && styles.avatarDone,
-                      state.kind === 'recorded' && state.queued && styles.avatarQueued,
-                    ]}
-                  >
+                  <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
                     {state.kind === 'recorded' ? (
                       state.queued ? (
                         <RefreshCw color={colors.warning} size={18} />

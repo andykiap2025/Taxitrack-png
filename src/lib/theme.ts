@@ -12,8 +12,8 @@ export const colors = {
   primaryDark: '#0B1220',
   primaryLight: '#1E3A6E',
   onPrimary: '#FFFFFF',
-  accent: '#F5A524', // taxi amber
-  accentDark: '#E08700',
+  accent: '#F0A800', // web orange (Bright Blue palette)
+  accentDark: '#C98D00',
   onAccent: '#231303',
 
   // Surfaces
@@ -52,13 +52,14 @@ export const colors = {
  * Six-color identity palette: avatars and person/vehicle accents pick a
  * stable color from these pairs (soft background + strong foreground).
  */
+// "Bright Blue" palette (colormagic): web orange, burnt sienna, scampi,
+// dodger blue, persian green — soft tint for fills, strong for text/icons.
 export const identityPalette = [
-  { soft: '#E4F0FC', strong: '#1570CD' }, // blue
-  { soft: '#E3F6EC', strong: '#12934F' }, // green
-  { soft: '#FCF0DA', strong: '#A96A0C' }, // amber
-  { soft: '#EFE9FC', strong: '#6D4FC4' }, // purple
-  { soft: '#FDE9EF', strong: '#C7285E' }, // rose
-  { soft: '#DFF4F4', strong: '#0E7F8A' }, // teal
+  { soft: '#E1F0FF', strong: '#0F6FD6' }, // dodger blue
+  { soft: '#DCF6F0', strong: '#00846A' }, // persian green
+  { soft: '#FDF2D7', strong: '#A87500' }, // web orange
+  { soft: '#ECE8F7', strong: '#5A4B99' }, // scampi
+  { soft: '#FBE7E0', strong: '#C24E31' }, // burnt sienna
 ] as const;
 
 /** Deterministic color per id/name — the same driver always gets the same color. */
@@ -71,7 +72,7 @@ export function identityColor(key: string): (typeof identityPalette)[number] {
 /** Gradient pairs — use sparingly: hero headers and primary buttons only. */
 export const gradients = {
   hero: ['#16294F', '#0B1220'] as const,
-  accent: ['#FFB938', '#F09000'] as const,
+  accent: ['#FFBE33', '#E9A200'] as const,
   card: ['#FFFFFF', '#F7F9FC'] as const,
 };
 

@@ -220,6 +220,7 @@ export default function PayrollScreen() {
           {rows.map((r) => (
             <Card
               key={r.driver.id}
+              tint={identityColor(r.driver.id).soft}
               onPress={() =>
                 period &&
                 router.push({
@@ -229,7 +230,7 @@ export default function PayrollScreen() {
               }
             >
               <View style={styles.row}>
-                <View style={[styles.avatar, { backgroundColor: identityColor(r.driver.id).soft }]}>
+                <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
                   <Text style={[styles.avatarText, { color: identityColor(r.driver.id).strong }]}>
                     {initialsOf(r.driver.full_name)}
                   </Text>

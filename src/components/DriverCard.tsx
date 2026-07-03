@@ -24,9 +24,12 @@ export function DriverCard({ driver }: { driver: DriverWithAssignment }) {
   const idc = identityColor(driver.id);
 
   return (
-    <Card onPress={() => router.push({ pathname: '/driver/[id]', params: { id: driver.id } })}>
+    <Card
+      tint={idc.soft}
+      onPress={() => router.push({ pathname: '/driver/[id]', params: { id: driver.id } })}
+    >
       <View style={styles.row}>
-        <View style={[styles.avatar, { backgroundColor: idc.soft }]}>
+        <View style={[styles.avatar, { backgroundColor: '#FFFFFF' }]}>
           <Text style={[styles.avatarText, { color: idc.strong }]}>
             {initialsOf(driver.full_name)}
           </Text>
