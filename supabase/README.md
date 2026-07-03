@@ -19,7 +19,11 @@ Follow these steps once; after that the app just works.
    1. `migrations/00001_schema.sql`
    2. `migrations/00002_rls.sql`
    3. `migrations/00003_storage.sql`
+   4. `migrations/00004_odometer_sync.sql`
 3. Each should end with "Success. No rows returned".
+
+> Already set up before migration 00004 existed? Just run
+> `migrations/00004_odometer_sync.sql` on its own — it's safe to add later.
 
 ## 3. Load the sample data (recommended for testing)
 

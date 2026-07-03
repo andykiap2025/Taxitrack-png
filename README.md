@@ -1,56 +1,59 @@
-# Welcome to your Expo app 👋
+# TaxiTrack PNG 🚕
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Taxi fleet management for Port Moresby operators — built for **Skyworks
+Communication and Computing**.
 
-## Get started
+The owner leases taxis to drivers. Every night at 11pm the taxis check in at
+base and takings are recorded **against the driver** (no entry = didn't work =
+no target). Drivers earn **29% of gross takings each fortnight**; days under
+the K180/K210 target write shortfall debits and strong days write surplus
+credits to a balance ledger that nets out at payroll. The app also tracks
+servicing (3 months / 5,000 km), compliance expiries (rego, safety sticker,
+MVIL, licenses), incidents, and produces PDF payslips and fleet reports.
 
-1. Install dependencies
+## Stack
 
-   ```bash
-   npm install
-   ```
+- **Expo SDK 57** (React Native + TypeScript), expo-router
+- **Supabase** — Postgres, Auth, Storage, Row Level Security
+- **Offline-first check-in** — entries queue in AsyncStorage and sync on reconnect
+- Roles: **owner** (everything) · **supervisor** (check-in, fleet, compliance) ·
+  **driver** (own takings & payslips)
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Running it
 
 ```bash
-npm run reset-project
+npm install
+npx expo start        # press w for browser, or scan the QR with Expo Go
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+First time? Set up the backend once: follow **[supabase/README.md](supabase/README.md)**
+(create the free Supabase project, run the 4 migrations, create logins, fill `.env`).
 
-### Other setup steps
+## Building the Android app (APK)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npm install -g eas-cli
+eas login             # free expo.dev account
+eas init              # once, links the project
+eas build -p android --profile preview
+```
 
-## Learn more
+EAS builds in the cloud and gives you a download link for the APK — install it
+directly on any Android phone (no Play Store needed).
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project map
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `src/app/` — screens (expo-router): tabs (dashboard, check-in, fleet, payroll,
+  more) + detail/form screens
+- `src/components/ui/` — the design system (cards, buttons, inputs, badges…)
+- `src/lib/` — business logic: `payroll.ts` (pure, tested money math),
+  `offlineQueue.ts`, `checkin.ts`, `format.ts` (PGK / DD/MM/YYYY)
+- `supabase/migrations/` — full schema, RLS policies, triggers (audit, ledger,
+  odometer), storage buckets
+- `CLAUDE.md` — the non-negotiable business rules
 
-## Join the community
+## Going live
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Before the first real night: clear the demo data by running the `truncate …`
+statement at the top of `supabase/seed.sql` in the Supabase SQL Editor, then add
+the real vehicles and drivers in the app.
