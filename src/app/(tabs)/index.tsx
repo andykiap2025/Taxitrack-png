@@ -213,73 +213,6 @@ function OwnerDashboard() {
         </>
       )}
 
-      {expiring.length > 0 && (
-        <>
-          <Text style={type.sectionTitle}>Expiring soon</Text>
-          <Card padded={false}>
-            {expiring.map((doc, idx) => (
-              <Pressable
-                key={doc.id}
-                onPress={() => router.push('/compliance')}
-                style={({ pressed }) => [
-                  styles.boardRow,
-                  idx < expiring.length - 1 && styles.divider,
-                  pressed && { backgroundColor: colors.surfaceMuted },
-                ]}
-              >
-                <View style={[styles.rowIcon, { backgroundColor: colors.warningSoft }]}>
-                  <FileWarning color={colors.warning} size={17} />
-                </View>
-                <View style={styles.rowInfo}>
-                  <Text style={type.bodyMedium}>
-                    {DOC_TYPE_LABELS[doc.doc_type] ?? doc.doc_type} ·{' '}
-                    {doc.vehicle?.plate_no ?? doc.driver?.full_name ?? '—'}
-                  </Text>
-                  <Text style={type.caption}>Tap to renew in Compliance</Text>
-                </View>
-                <Badge
-                  label={expiryLabel(doc.expiry_date)}
-                  tone={toneForDays(daysUntil(doc.expiry_date))}
-                />
-              </Pressable>
-            ))}
-          </Card>
-        </>
-      )}
-
-      {serviceDue.length > 0 && (
-        <>
-          <Text style={type.sectionTitle}>Service due</Text>
-          <Card padded={false}>
-            {serviceDue.map((s, idx) => (
-              <Pressable
-                key={s.vehicle.id}
-                onPress={() => router.push('/service')}
-                style={({ pressed }) => [
-                  styles.boardRow,
-                  idx < serviceDue.length - 1 && styles.divider,
-                  pressed && { backgroundColor: colors.surfaceMuted },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.rowIcon,
-                    { backgroundColor: s.tone === 'danger' ? colors.dangerSoft : colors.warningSoft },
-                  ]}
-                >
-                  <Wrench color={s.tone === 'danger' ? colors.danger : colors.warning} size={16} />
-                </View>
-                <View style={styles.rowInfo}>
-                  <Text style={type.bodyMedium}>{s.vehicle.plate_no}</Text>
-                  <Text style={type.caption}>Tap to log or schedule the service</Text>
-                </View>
-                <Badge label={s.label} tone={s.tone} />
-              </Pressable>
-            ))}
-          </Card>
-        </>
-      )}
-
       <Text style={type.sectionTitle}>Tonight's board</Text>
       {loading ? (
         <SkeletonCard />
@@ -360,6 +293,73 @@ function OwnerDashboard() {
             );
           })}
         </Card>
+      )}
+
+      {serviceDue.length > 0 && (
+        <>
+          <Text style={type.sectionTitle}>Service due</Text>
+          <Card padded={false}>
+            {serviceDue.map((s, idx) => (
+              <Pressable
+                key={s.vehicle.id}
+                onPress={() => router.push('/service')}
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < serviceDue.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.rowIcon,
+                    { backgroundColor: s.tone === 'danger' ? colors.dangerSoft : colors.warningSoft },
+                  ]}
+                >
+                  <Wrench color={s.tone === 'danger' ? colors.danger : colors.warning} size={16} />
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>{s.vehicle.plate_no}</Text>
+                  <Text style={type.caption}>Tap to log or schedule the service</Text>
+                </View>
+                <Badge label={s.label} tone={s.tone} />
+              </Pressable>
+            ))}
+          </Card>
+        </>
+      )}
+
+      {expiring.length > 0 && (
+        <>
+          <Text style={type.sectionTitle}>Expiring soon</Text>
+          <Card padded={false}>
+            {expiring.map((doc, idx) => (
+              <Pressable
+                key={doc.id}
+                onPress={() => router.push('/compliance')}
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < expiring.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View style={[styles.rowIcon, { backgroundColor: colors.warningSoft }]}>
+                  <FileWarning color={colors.warning} size={17} />
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>
+                    {DOC_TYPE_LABELS[doc.doc_type] ?? doc.doc_type} ·{' '}
+                    {doc.vehicle?.plate_no ?? doc.driver?.full_name ?? '—'}
+                  </Text>
+                  <Text style={type.caption}>Tap to renew in Compliance</Text>
+                </View>
+                <Badge
+                  label={expiryLabel(doc.expiry_date)}
+                  tone={toneForDays(daysUntil(doc.expiry_date))}
+                />
+              </Pressable>
+            ))}
+          </Card>
+        </>
       )}
     </Screen>
   );
