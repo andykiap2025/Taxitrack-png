@@ -3,6 +3,7 @@ import {
   ChevronRight,
   LogOut,
   Settings,
+  Siren,
   Wrench,
   type LucideIcon,
 } from 'lucide-react-native';
@@ -40,6 +41,12 @@ export default function MoreScreen() {
       label: 'Service & Compliance',
       caption: 'Rego, stickers, MVIL, licenses',
       onPress: () => router.push('/compliance'),
+    },
+    {
+      icon: Siren,
+      label: 'Incidents',
+      caption: 'Accidents, fines, damage — with photos',
+      onPress: () => router.push('/incidents'),
     },
     { icon: BarChart3, label: 'Reports', caption: 'Profitability, trends, rankings', soon: true },
     {
