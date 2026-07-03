@@ -1,20 +1,90 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { CarTaxiFront, ClipboardList } from 'lucide-react-native';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import {
+  AlertTriangle,
+  CarTaxiFront,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  Moon,
+  RefreshCw,
+} from 'lucide-react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Card, EmptyState, Screen } from '@/components/ui';
+import { SyncChip } from '@/components/SyncChip';
+import { Badge, Button, Card, Screen, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
-import { formatDateLong, todayISO } from '@/lib/format';
-import { colors, font, gradients, radius, shadow, spacing } from '@/lib/theme';
+import {
+  defaultBusinessDate,
+  loadBundle,
+  loadTakingsForDate,
+  type CheckinBundle,
+} from '@/lib/checkin';
+import { formatDateLong, formatPGK, nowPOMMinutes, todayISO } from '@/lib/format';
+import { initialsOf } from '@/lib/labels';
+import { subscribeQueue, type QueuedItem } from '@/lib/offlineQueue';
+import { colors, font, gradients, radius, shadow, spacing, type } from '@/lib/theme';
+import type { DailyTakings } from '@/types/db';
 
-/**
- * Dashboard shell — the live check-in board and takings stats land in
- * Phase 6; reports complete it in Phase 12.
- */
 export default function Dashboard() {
   const { profile } = useAuth();
+  const router = useRouter();
   const firstName = profile?.full_name?.split(' ')[0] || 'there';
+
+  const date = defaultBusinessDate();
+  const [bundle, setBundle] = useState<CheckinBundle | null>(null);
+  const [rows, setRows] = useState<DailyTakings[]>([]);
+  const [queued, setQueued] = useState<QueuedItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    const [b, t] = await Promise.all([loadBundle(), loadTakingsForDate(date)]);
+    setBundle(b.bundle);
+    setRows(t.rows);
+    setLoading(false);
+  }, [date]);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+      const unsub = subscribeQueue((s) => setQueued(s.pending));
+      return unsub;
+    }, [load]),
+  );
+
+  // Merge server + queued entries for tonight.
+  const entries = useMemo(() => {
+    const map = new Map<string, { received: number; shortfall: number; queued: boolean }>();
+    for (const r of rows) {
+      map.set(r.driver_id, {
+        received: r.amount_received,
+        shortfall: r.shortfall_amount,
+        queued: false,
+      });
+    }
+    for (const item of queued) {
+      if (item.payload.date !== date) continue;
+      const p = item.payload;
+      map.set(p.driver_id, {
+        received: p.amount_received,
+        shortfall: p.target_amount === null ? 0 : Math.max(p.target_amount - p.amount_received, 0),
+        queued: true,
+      });
+    }
+    return map;
+  }, [rows, queued, date]);
+
+  const drivers = bundle?.drivers ?? [];
+  const recorded = drivers.filter((d) => entries.has(d.id));
+  const pending = drivers.filter((d) => !entries.has(d.id));
+  const totalTonight = [...entries.values()].reduce((s, e) => s + e.received, 0);
+  const shortfalls = recorded
+    .map((d) => ({ driver: d, entry: entries.get(d.id)! }))
+    .filter((x) => x.entry.shortfall > 0);
+
+  // After 23:30 POM, still-pending drivers are flagged as missed.
+  const pastEscalation = date === todayISO() && nowPOMMinutes() >= 23 * 60 + 30;
 
   return (
     <Screen>
@@ -27,7 +97,7 @@ export default function Dashboard() {
         <View style={styles.heroTop}>
           <View>
             <Text style={styles.heroGreeting}>Hi {firstName} 👋</Text>
-            <Text style={styles.heroDate}>{formatDateLong(todayISO())} · Port Moresby</Text>
+            <Text style={styles.heroDate}>{formatDateLong(date)} · Port Moresby</Text>
           </View>
           <View style={styles.heroLogo}>
             <CarTaxiFront color={colors.accent} size={24} />
@@ -36,23 +106,138 @@ export default function Dashboard() {
         <View style={styles.heroStats}>
           <View style={styles.heroStat}>
             <Text style={styles.heroStatLabel}>Tonight's takings</Text>
-            <Text style={styles.heroStatValue}>—</Text>
+            <Text style={styles.heroStatValue}>{formatPGK(totalTonight, { decimals: 0 })}</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroStat}>
             <Text style={styles.heroStatLabel}>Checked in</Text>
-            <Text style={styles.heroStatValue}>—</Text>
+            <Text style={styles.heroStatValue}>
+              {recorded.length} / {drivers.length}
+            </Text>
           </View>
         </View>
       </LinearGradient>
 
-      <Card padded={false}>
-        <EmptyState
-          icon={<ClipboardList color={colors.textMuted} size={30} />}
-          title="No activity yet"
-          message="Tonight's check-in board, takings vs targets and alerts will appear here."
+      <View style={styles.actionsRow}>
+        <Button
+          title="Start check-in"
+          size="md"
+          icon={<ClipboardCheck color={colors.onAccent} size={17} />}
+          onPress={() => router.navigate('/checkin')}
+          style={styles.actionBtn}
         />
-      </Card>
+        <SyncChip />
+      </View>
+
+      {shortfalls.length > 0 && (
+        <>
+          <Text style={type.sectionTitle}>Shortfall flags</Text>
+          <Card padded={false}>
+            {shortfalls.map(({ driver, entry }, idx) => (
+              <Pressable
+                key={driver.id}
+                onPress={() =>
+                  router.push({ pathname: '/takings/entry', params: { driverId: driver.id, date } })
+                }
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < shortfalls.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View style={[styles.rowIcon, { backgroundColor: colors.dangerSoft }]}>
+                  <AlertTriangle color={colors.danger} size={17} />
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>{driver.full_name}</Text>
+                  <Text style={type.caption}>Handed in {formatPGK(entry.received)}</Text>
+                </View>
+                <Badge label={`Short ${formatPGK(entry.shortfall, { decimals: 0 })}`} tone="danger" />
+              </Pressable>
+            ))}
+          </Card>
+        </>
+      )}
+
+      <Text style={type.sectionTitle}>Tonight's board</Text>
+      {loading ? (
+        <SkeletonCard />
+      ) : drivers.length === 0 ? (
+        <Card>
+          <Text style={type.body}>
+            Add vehicles and drivers in the Fleet tab to see the nightly board here.
+          </Text>
+        </Card>
+      ) : (
+        <Card padded={false}>
+          {[...recorded, ...pending].map((d, idx) => {
+            const entry = entries.get(d.id);
+            const missed = !entry && pastEscalation;
+            return (
+              <Pressable
+                key={d.id}
+                onPress={() =>
+                  router.push({ pathname: '/takings/entry', params: { driverId: d.id, date } })
+                }
+                style={({ pressed }) => [
+                  styles.boardRow,
+                  idx < drivers.length - 1 && styles.divider,
+                  pressed && { backgroundColor: colors.surfaceMuted },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.rowIcon,
+                    entry
+                      ? entry.queued
+                        ? { backgroundColor: colors.warningSoft }
+                        : { backgroundColor: colors.successSoft }
+                      : missed
+                        ? { backgroundColor: colors.dangerSoft }
+                        : { backgroundColor: colors.surfaceMuted },
+                  ]}
+                >
+                  {entry ? (
+                    entry.queued ? (
+                      <RefreshCw color={colors.warning} size={16} />
+                    ) : (
+                      <CheckCircle2 color={colors.success} size={17} />
+                    )
+                  ) : missed ? (
+                    <AlertTriangle color={colors.danger} size={16} />
+                  ) : (
+                    <Text style={styles.rowInitials}>{initialsOf(d.full_name)}</Text>
+                  )}
+                </View>
+                <View style={styles.rowInfo}>
+                  <Text style={type.bodyMedium}>{d.full_name}</Text>
+                  <Text style={type.caption}>
+                    {entry
+                      ? `${formatPGK(entry.received)}${entry.queued ? ' · waiting to sync' : ''}`
+                      : missed
+                        ? 'No check-in recorded'
+                        : 'Not checked in yet'}
+                  </Text>
+                </View>
+                {entry ? (
+                  entry.shortfall > 0 ? (
+                    <Badge label="Short" tone="danger" dot />
+                  ) : (
+                    <Badge label="In" tone="success" dot />
+                  )
+                ) : missed ? (
+                  <Badge label="Missed" tone="danger" dot />
+                ) : (
+                  <View style={styles.pendingIcons}>
+                    <Moon color={colors.textMuted} size={15} />
+                    <ChevronRight color={colors.textMuted} size={17} />
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </Card>
+      )}
     </Screen>
   );
 }
@@ -110,5 +295,45 @@ const styles = StyleSheet.create({
     fontFamily: font.extrabold,
     fontSize: 22,
     color: colors.textOnDark,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  actionBtn: {
+    flex: 1,
+  },
+  boardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
+  divider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  rowIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowInitials: {
+    fontFamily: font.bold,
+    fontSize: 13,
+    color: colors.textSecondary,
+  },
+  rowInfo: {
+    flex: 1,
+    gap: 1,
+  },
+  pendingIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
 });

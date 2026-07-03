@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { startQueueAutoFlush } from '@/lib/offlineQueue';
 import { colors } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -54,6 +55,11 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded]);
+
+  // Replay any offline takings entries on reconnect / app foreground.
+  useEffect(() => {
+    startQueueAutoFlush();
+  }, []);
 
   if (!fontsLoaded) return null;
 
