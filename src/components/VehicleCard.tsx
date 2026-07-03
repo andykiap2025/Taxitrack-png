@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { CarFront } from 'lucide-react-native';
+import { CarFront, ChevronRight } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -18,6 +18,12 @@ const DOT = {
   retired: '#9CA3AF',
 } as const;
 
+const STATUS_NOTE: Partial<Record<Vehicle['status'], string>> = {
+  off_road: 'Off road',
+  in_service: 'In service',
+  retired: 'Retired',
+};
+
 type Props = {
   vehicle: Vehicle;
   /** Current holder from the open assignment; null = unassigned. */
@@ -28,6 +34,7 @@ type Props = {
 
 export function VehicleCard({ vehicle, driver, onNoDriver }: Props) {
   const router = useRouter();
+  const note = STATUS_NOTE[vehicle.status];
 
   return (
     <Card
@@ -36,49 +43,56 @@ export function VehicleCard({ vehicle, driver, onNoDriver }: Props) {
     >
       <View style={styles.row}>
         <View style={styles.iconWrap}>
-          <CarFront color={colors.primary} size={22} />
+          <CarFront color={colors.primary} size={20} />
         </View>
         <View style={styles.info}>
           <View style={styles.plateRow}>
             <Text style={type.cardTitle}>{vehicle.plate_no}</Text>
             <View style={[styles.dot, { backgroundColor: DOT[vehicle.status] }]} />
+            <View style={styles.flex} />
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>
+                {VEHICLE_CLASS[vehicle.vehicle_class]} ·{' '}
+                {formatPGK(vehicle.daily_target, { decimals: 0 })}
+              </Text>
+            </View>
           </View>
           <Text style={type.caption} numberOfLines={1}>
             {titleCase([vehicle.make, vehicle.model].filter(Boolean).join(' '))}
             {vehicle.year ? ` ${vehicle.year}` : ''}
-          </Text>
-        </View>
-        <View style={styles.tag}>
-          <Text style={styles.tagText}>
-            {VEHICLE_CLASS[vehicle.vehicle_class]} · {formatPGK(vehicle.daily_target, { decimals: 0 })}
+            {note ? ` · ${note}` : ''}
           </Text>
         </View>
       </View>
 
-      {/* Footer: only the assigned driver. */}
       <View style={styles.footerDivider} />
-      {driver ? (
-        <Pressable
-          onPress={() => router.push({ pathname: '/driver/[id]', params: { id: driver.id } })}
-          style={({ pressed }) => [styles.driverChip, pressed && { opacity: 0.7 }]}
-          hitSlop={4}
-        >
-          <View style={styles.chipAvatar}>
-            <Text style={styles.chipInitials}>{initialsOf(driver.name)}</Text>
+
+      <Pressable
+        onPress={
+          driver
+            ? () => router.push({ pathname: '/driver/[id]', params: { id: driver.id } })
+            : onNoDriver
+        }
+        style={({ pressed }) => [styles.footerRow, pressed && { opacity: 0.7 }]}
+        hitSlop={4}
+      >
+        {driver ? (
+          <View style={styles.driverPill}>
+            <View style={styles.chipAvatar}>
+              <Text style={styles.chipInitials}>{initialsOf(driver.name)}</Text>
+            </View>
+            <Text style={styles.chipName} numberOfLines={1}>
+              {titleCase(driver.name)}
+            </Text>
           </View>
-          <Text style={styles.chipName} numberOfLines={1}>
-            {titleCase(driver.name)}
-          </Text>
-        </Pressable>
-      ) : (
-        <Pressable
-          onPress={onNoDriver}
-          style={({ pressed }) => [styles.noDriverPill, pressed && { opacity: 0.7 }]}
-          hitSlop={4}
-        >
-          <Text style={styles.noDriverText}>No driver assigned</Text>
-        </Pressable>
-      )}
+        ) : (
+          <View style={styles.noDriverPill}>
+            <Text style={styles.noDriverText}>No driver assigned</Text>
+          </View>
+        )}
+        <View style={styles.flex} />
+        <ChevronRight color="#9CA3AF" size={16} />
+      </Pressable>
     </Card>
   );
 }
@@ -89,6 +103,10 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#E5E8EC',
     borderRadius: 14,
+    paddingVertical: 12,
+  },
+  flex: {
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -96,8 +114,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   iconWrap: {
-    width: 46,
-    height: 46,
+    width: 40,
+    height: 40,
     borderRadius: radius.sm,
     backgroundColor: '#EEF1F5',
     alignItems: 'center',
@@ -105,7 +123,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    gap: 2,
+    gap: 1,
   },
   plateRow: {
     flexDirection: 'row',
@@ -120,28 +138,38 @@ const styles = StyleSheet.create({
   tag: {
     backgroundColor: '#EEF1F5',
     borderRadius: radius.full,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
   },
   tagText: {
     fontFamily: font.semibold,
-    fontSize: 12,
+    fontSize: 11,
     color: '#4B5563',
   },
   footerDivider: {
-    height: 1,
-    backgroundColor: '#EEF1F5',
-    marginVertical: spacing.sm,
+    height: 0.5,
+    backgroundColor: '#E5E8EC',
+    marginTop: 8,
+    marginBottom: 8,
   },
-  driverChip: {
+  footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    alignSelf: 'flex-start',
+  },
+  driverPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#EEF1F5',
+    borderRadius: radius.full,
+    paddingVertical: 3,
+    paddingLeft: 3,
+    paddingRight: 10,
   },
   chipAvatar: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     borderRadius: radius.full,
     backgroundColor: colors.primary,
     alignItems: 'center',
@@ -149,24 +177,23 @@ const styles = StyleSheet.create({
   },
   chipInitials: {
     fontFamily: font.bold,
-    fontSize: 10,
+    fontSize: 9,
     color: '#FFFFFF',
   },
   chipName: {
     fontFamily: font.semibold,
-    fontSize: 13,
+    fontSize: 12,
     color: colors.text,
   },
   noDriverPill: {
-    alignSelf: 'flex-start',
     backgroundColor: '#FEF3C7',
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
+    paddingVertical: 4,
   },
   noDriverText: {
     fontFamily: font.semibold,
-    fontSize: 12,
+    fontSize: 11,
     color: '#B45309',
   },
 });
