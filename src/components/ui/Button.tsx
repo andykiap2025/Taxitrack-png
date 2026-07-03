@@ -81,6 +81,11 @@ export function Button({
     variant === 'secondary' && styles.secondary,
     variant === 'outline' && styles.outline,
     variant === 'danger' && styles.dangerOutline,
+    // 3D embossed edge: light top bevel + dark bottom lip per variant.
+    variant === 'primary' && styles.edgePrimary,
+    variant === 'secondary' && styles.edgeSecondary,
+    variant === 'outline' && styles.edgeOutline,
+    variant === 'danger' && styles.edgeDanger,
     inactive && styles.disabled,
     style,
   ].filter(Boolean) as ViewStyle[];
@@ -94,6 +99,7 @@ export function Button({
         variant === 'primary' && !inactive && shadow.accentGlow,
         variant === 'secondary' && !inactive && shadow.card,
         pressed && styles.pressed,
+        pressed && variant !== 'ghost' && styles.pressedDown,
       ]}
     >
       {variant === 'primary' ? (
@@ -156,8 +162,33 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
+  edgePrimary: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#B36F0A',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.55)',
+  },
+  edgeSecondary: {
+    borderBottomWidth: 4,
+    borderBottomColor: colors.primaryDark,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.25)',
+  },
+  edgeOutline: {
+    borderBottomWidth: 3.5,
+    borderBottomColor: colors.borderStrong,
+  },
+  edgeDanger: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#F3C1BB',
+  },
   pressed: {
     transform: [{ scale: 0.98 }],
     opacity: 0.92,
+  },
+  // The button "sinks" when pressed — the 3D lip flattens.
+  pressedDown: {
+    transform: [{ scale: 0.98 }, { translateY: 2 }],
+    borderBottomWidth: 1,
   },
 });

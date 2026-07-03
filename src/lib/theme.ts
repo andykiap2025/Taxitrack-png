@@ -19,8 +19,8 @@ export const colors = {
   // Surfaces
   background: '#EAEEF5',
   surface: '#FFFFFF',
-  /** Card faces: a whisper of blue so cards read as tinted panels. */
-  card: '#FAFBFF',
+  /** Card faces: light blue so cards read as tinted panels. */
+  card: '#F2F7FD',
   surfaceMuted: '#EDF1F7',
   border: '#E3E8F0',
   borderStrong: '#C9D2E0',
@@ -53,12 +53,13 @@ export const colors = {
  * stable color from these pairs (soft background + strong foreground).
  */
 export const identityPalette = [
-  { soft: '#E4F0FC', strong: '#1570CD' }, // blue
-  { soft: '#E3F6EC', strong: '#12934F' }, // green
-  { soft: '#FCF0DA', strong: '#A96A0C' }, // amber
-  { soft: '#EFE9FC', strong: '#6D4FC4' }, // purple
-  { soft: '#FDE9EF', strong: '#C7285E' }, // rose
-  { soft: '#DFF4F4', strong: '#0E7F8A' }, // teal
+  // Blue + green family — the Safco theme.
+  { soft: '#E3EFFD', strong: '#1465C0' }, // blue
+  { soft: '#E2F6E9', strong: '#0F8A44' }, // green
+  { soft: '#DFF3F4', strong: '#0E7F8A' }, // teal
+  { soft: '#EBF7DF', strong: '#4A7D12' }, // leaf
+  { soft: '#E9EDFC', strong: '#4356C4' }, // indigo
+  { soft: '#DFF2FA', strong: '#0B6E9E' }, // sea
 ] as const;
 
 /** Deterministic color per id/name — the same driver always gets the same color. */

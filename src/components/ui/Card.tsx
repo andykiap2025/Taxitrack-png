@@ -9,17 +9,20 @@ type Props = ViewProps & {
   padded?: boolean;
   /** Stronger elevation for hero/floating cards. */
   raised?: boolean;
+  /** Soft background color, e.g. an identityPalette soft tone. */
+  tint?: string;
   style?: ViewStyle | ViewStyle[];
 };
 
 /**
  * Base surface: 20px radius, soft shadow, press feedback when tappable.
  */
-export function Card({ onPress, padded = true, raised = false, style, children, ...rest }: Props) {
+export function Card({ onPress, padded = true, raised = false, tint, style, children, ...rest }: Props) {
   const base = [
     styles.card,
     raised ? shadow.raised : shadow.card,
     padded && styles.padded,
+    tint ? { backgroundColor: tint } : null,
     style,
   ];
 

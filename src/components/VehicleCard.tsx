@@ -6,18 +6,22 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Badge, Card } from '@/components/ui';
 import { formatPGK } from '@/lib/format';
 import { VEHICLE_CLASS, VEHICLE_STATUS } from '@/lib/labels';
-import { colors, font, radius, spacing, type } from '@/lib/theme';
+import { colors, font, identityColor, radius, spacing, type } from '@/lib/theme';
 import type { Vehicle } from '@/types/db';
 
 export function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const router = useRouter();
   const status = VEHICLE_STATUS[vehicle.status];
+  const idc = identityColor(vehicle.id);
 
   return (
-    <Card onPress={() => router.push({ pathname: '/vehicle/[id]', params: { id: vehicle.id } })}>
+    <Card
+      tint={idc.soft}
+      onPress={() => router.push({ pathname: '/vehicle/[id]', params: { id: vehicle.id } })}
+    >
       <View style={styles.row}>
-        <View style={styles.iconWrap}>
-          <CarFront color={colors.primary} size={22} />
+        <View style={[styles.iconWrap, { backgroundColor: '#FFFFFF' }]}>
+          <CarFront color={idc.strong} size={22} />
         </View>
         <View style={styles.info}>
           <Text style={type.cardTitle}>{vehicle.plate_no}</Text>
