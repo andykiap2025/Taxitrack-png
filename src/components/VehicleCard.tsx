@@ -99,9 +99,9 @@ export function VehicleCard({ vehicle, driver, onNoDriver }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 0.5,
-    borderColor: '#E5E8EC',
+    backgroundColor: '#F7F9FD',
+    borderWidth: 1,
+    borderColor: '#DCE2EC',
     borderRadius: 14,
     paddingVertical: 12,
   },
@@ -117,7 +117,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: radius.sm,
-    backgroundColor: '#EEF1F5',
+    backgroundColor: '#E3E9F5',
+    borderWidth: 1,
+    borderColor: '#D3DCEE',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -136,7 +138,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   tag: {
-    backgroundColor: '#EEF1F5',
+    backgroundColor: '#E3E9F5',
+    borderWidth: 1,
+    borderColor: '#D3DCEE',
     borderRadius: radius.full,
     paddingHorizontal: spacing.xs,
     paddingVertical: 4,
@@ -144,7 +148,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontFamily: font.semibold,
     fontSize: 11,
-    color: '#4B5563',
+    color: colors.primary,
   },
   footerDivider: {
     height: 0.5,
@@ -161,7 +165,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#EEF1F5',
+    backgroundColor: '#E3E9F5',
+    borderWidth: 1,
+    borderColor: '#D3DCEE',
     borderRadius: radius.full,
     paddingVertical: 3,
     paddingLeft: 3,

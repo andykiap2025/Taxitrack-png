@@ -39,8 +39,10 @@ export function Segmented<T extends string>({ options, value, onChange, style }:
 const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: '#EEF1F5',
     borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: '#E0E4EB',
     padding: 4,
   },
   item: {
@@ -51,7 +53,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   itemActive: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
+    borderWidth: 1,
+    borderColor: colors.primaryDark,
   },
   label: {
     fontFamily: font.semibold,
@@ -59,6 +63,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   labelActive: {
-    color: colors.primary,
+    color: '#FFFFFF',
   },
 });
