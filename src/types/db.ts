@@ -149,7 +149,7 @@ export interface ServiceRecord {
   id: string;
   vehicle_id: string;
   service_date: string;
-  odometer_at_service: number;
+  odometer_at_service: number | null;
   cost: number;
   workshop: string | null;
   notes: string | null;

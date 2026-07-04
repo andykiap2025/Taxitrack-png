@@ -31,21 +31,14 @@ export default function ServiceForm() {
       .then(({ data }) => setVehicles((data ?? []) as Vehicle[]));
   }, []);
 
-  const vehicle = vehicles.find((v) => v.id === selected) ?? null;
-
-  // Default the odometer to the vehicle's last known reading.
-  useEffect(() => {
-    if (vehicle && !odometer) setOdometer(String(vehicle.odometer_current));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicle?.id]);
-
   const save = async () => {
     const errs: Record<string, string> = {};
     if (!selected) errs.vehicle = 'Pick the vehicle';
     const dateISO = parseDMY(date);
     if (!dateISO) errs.date = 'Use DD/MM/YYYY';
-    const odoNum = Number(odometer);
-    if (!Number.isInteger(odoNum) || odoNum <= 0) errs.odometer = 'Odometer is required';
+    const odoNum = odometer.trim() ? Number(odometer) : null;
+    if (odoNum !== null && (!Number.isInteger(odoNum) || odoNum < 0))
+      errs.odometer = 'Enter a valid reading or leave blank';
     const costNum = Number(cost || '0');
     if (!Number.isFinite(costNum) || costNum < 0) errs.cost = 'Enter a valid cost';
     setErrors(errs);
@@ -81,10 +74,7 @@ export default function ServiceForm() {
                 return (
                   <Pressable
                     key={v.id}
-                    onPress={() => {
-                      setSelected(v.id);
-                      setOdometer(String(v.odometer_current));
-                    }}
+                    onPress={() => setSelected(v.id)}
                     style={[styles.chip, active && styles.chipActive]}
                   >
                     <Text style={[styles.chipText, active && styles.chipTextActive]}>{v.plate_no}</Text>
@@ -106,7 +96,8 @@ export default function ServiceForm() {
             containerStyle={styles.flex}
           />
           <Input
-            label="Odometer (km)"
+            label="Odometer (km) — optional"
+            placeholder="Leave blank"
             keyboardType="number-pad"
             value={odometer}
             onChangeText={setOdometer}
@@ -136,7 +127,7 @@ export default function ServiceForm() {
           onChangeText={setNotes}
         />
         <Text style={type.caption}>
-          Next service is set automatically: +3 months and +5,000 km from this service.
+          Next service is set automatically at +3 months (and +5,000 km if you enter a reading).
         </Text>
         <Button title="Save service" fullWidth loading={busy} onPress={save} />
       </Card>

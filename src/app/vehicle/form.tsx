@@ -225,8 +225,8 @@ export default function VehicleForm() {
             error={errors.target}
           />
           <Input
-            label="Current odometer (km)"
-            placeholder="e.g. 84250"
+            label="Current odometer (km) — optional"
+            placeholder="Leave blank if not tracked"
             keyboardType="number-pad"
             value={odometer}
             onChangeText={setOdometer}

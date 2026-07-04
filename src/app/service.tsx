@@ -104,7 +104,11 @@ export default function ServiceScreen() {
                     <Text style={type.bodyMedium}>{v.plate_no}</Text>
                     <Text style={type.caption}>
                       {last
-                        ? `Last ${formatDate(last.service_date)} at ${last.odometer_at_service.toLocaleString('en-US')} km`
+                        ? `Last ${formatDate(last.service_date)}${
+                            last.odometer_at_service !== null
+                              ? ` at ${last.odometer_at_service.toLocaleString('en-US')} km`
+                              : ''
+                          }`
                         : 'Tap to log the first service'}
                     </Text>
                   </View>
@@ -125,8 +129,10 @@ export default function ServiceScreen() {
                         {rec.vehicle?.plate_no ?? '—'} · {formatPGK(Number(rec.cost))}
                       </Text>
                       <Text style={type.caption}>
-                        {formatDate(rec.service_date)} ·{' '}
-                        {rec.odometer_at_service.toLocaleString('en-US')} km
+                        {formatDate(rec.service_date)}
+                        {rec.odometer_at_service !== null
+                          ? ` · ${rec.odometer_at_service.toLocaleString('en-US')} km`
+                          : ''}
                         {rec.workshop ? ` · ${rec.workshop}` : ''}
                         {rec.notes ? ` — ${rec.notes}` : ''}
                       </Text>

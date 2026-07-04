@@ -187,7 +187,11 @@ export default function VehicleDetail() {
           />
           <StatTile
             label="Odometer"
-            value={`${vehicle.odometer_current.toLocaleString('en-US')} km`}
+            value={
+              vehicle.odometer_current > 0
+                ? `${vehicle.odometer_current.toLocaleString('en-US')} km`
+                : '—'
+            }
             icon={<Gauge color={colors.primary} size={18} />}
           />
         </View>
@@ -258,8 +262,10 @@ export default function VehicleDetail() {
                 Next due{' '}
                 {q.data!.lastService.next_due_date
                   ? formatDate(q.data!.lastService.next_due_date)
-                  : '—'}{' '}
-                or {q.data!.lastService.next_due_odometer?.toLocaleString('en-US')} km
+                  : '—'}
+                {q.data!.lastService.next_due_odometer !== null
+                  ? ` or ${q.data!.lastService.next_due_odometer.toLocaleString('en-US')} km`
+                  : ''}
               </Text>
             </View>
             {q.data!.lastService.next_due_date ? (

@@ -22,6 +22,7 @@ Follow these steps once; after that the app just works.
    4. `migrations/00004_odometer_sync.sql`
    5. `migrations/00005_photos_and_details.sql`
    6. `migrations/00006_optional_odometer.sql`
+   7. `migrations/00007_optional_service_odometer.sql`
 3. Each should end with "Success. No rows returned".
 
 > Set up earlier with fewer migration files? Just run the ones you're
