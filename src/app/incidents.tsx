@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Card, EmptyState, Screen, ScreenHeader, SkeletonCard } from '@/components/ui';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
-import { formatDate, formatPGK } from '@/lib/format';
+import { formatDate, formatName, formatPGK } from '@/lib/format';
 import { signedUrl } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { colors, radius, shadow, spacing, type } from '@/lib/theme';
@@ -103,7 +103,7 @@ export default function IncidentsScreen() {
                 </Text>
                 <Text style={type.caption} numberOfLines={1}>
                   {formatDate(inc.date)}
-                  {inc.driver ? ` · ${inc.driver.full_name}` : ''}
+                  {inc.driver ? ` · ${formatName(inc.driver.full_name)}` : ''}
                   {inc.police_report_no ? ` · Police ${inc.police_report_no}` : ''}
                   {inc.description ? ` — ${inc.description}` : ''}
                 </Text>

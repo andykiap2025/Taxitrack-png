@@ -7,7 +7,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import { Platform } from 'react-native';
 
-import { formatDate, formatDateLong, formatPGK } from '@/lib/format';
+import { formatDate, formatDateLong, formatName, formatPGK } from '@/lib/format';
 import { computePayroll, type PayrollComputation, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
 import type {
@@ -251,7 +251,7 @@ export function payslipHTML(input: {
     <div class="badge">${input.status}</div>
   </div>
   <div class="meta">
-    <div>Driver<b>${driver.full_name}</b></div>
+    <div>Driver<b>${formatName(driver.full_name)}</b></div>
     <div>Pay period<b>${formatDate(period.start)} – ${formatDate(period.end)}</b></div>
     <div>Days worked<b>${daysWorked}</b></div>
     ${input.paidDate ? `<div>Paid<b>${formatDate(input.paidDate)}</b></div>` : ''}

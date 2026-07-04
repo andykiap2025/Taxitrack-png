@@ -70,6 +70,15 @@ export function nowPOMMinutes(now: Date = new Date()): number {
   return h * 60 + m;
 }
 
+/** Title-cases a person's name for display: "james taru" → "James Taru". */
+export function formatName(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 /** Parse "25/12/2026" (DD/MM/YYYY) → "2026-12-25", or null if invalid. */
 export function parseDMY(input: string): string | null {
   const trimmed = input.trim();

@@ -17,12 +17,14 @@ import {
 } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
+import { daysUntil } from '@/lib/alerts';
 import { supabase } from '@/lib/supabase';
 import { colors, font, radius, shadow, spacing, type } from '@/lib/theme';
 import type { Vehicle } from '@/types/db';
 
 type Section = 'vehicles' | 'drivers';
 type StatusFilter = 'all' | 'active' | 'off';
+type DriverFilter = 'all' | 'active' | 'notaxi' | 'license';
 
 export default function FleetScreen() {
   const router = useRouter();
@@ -30,6 +32,7 @@ export default function FleetScreen() {
   const [section, setSection] = useState<Section>('vehicles');
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [driverFilter, setDriverFilter] = useState<DriverFilter>('all');
 
   const vehicles = useSupabaseQuery<Vehicle[]>(
     () => supabase.from('vehicles').select('*').order('plate_no'),
@@ -78,15 +81,59 @@ export default function FleetScreen() {
         v.plate_no.toLowerCase().includes(q) ||
         `${v.make} ${v.model}`.toLowerCase().includes(q),
     );
-  const visibleDrivers = (drivers.data ?? []).filter(
-    (d) => q.length === 0 || d.full_name.toLowerCase().includes(q),
-  );
+  // Driver health helpers for filters + sort.
+  const hasTaxi = (d: DriverWithAssignment) =>
+    d.assignments.some((a) => !a.end_date && a.vehicle);
+  const licenseDue = (d: DriverWithAssignment) =>
+    d.license_expiry !== null && daysUntil(d.license_expiry) <= 30;
+
+  const allDrivers = drivers.data ?? [];
+  const dCounts = {
+    all: allDrivers.length,
+    active: allDrivers.filter((d) => d.status === 'active').length,
+    notaxi: allDrivers.filter((d) => !hasTaxi(d)).length,
+    license: allDrivers.filter(licenseDue).length,
+  };
+  const visibleDrivers = allDrivers
+    .filter((d) =>
+      driverFilter === 'all'
+        ? true
+        : driverFilter === 'active'
+          ? d.status === 'active'
+          : driverFilter === 'notaxi'
+            ? !hasTaxi(d)
+            : licenseDue(d),
+    )
+    .filter(
+      (d) =>
+        q.length === 0 ||
+        d.full_name.toLowerCase().includes(q) ||
+        (d.phone ?? '').toLowerCase().includes(q),
+    )
+    .sort((a, b) => {
+      // License problems first, then unassigned, then alphabetical.
+      const rank = (d: DriverWithAssignment) => (licenseDue(d) ? 0 : !hasTaxi(d) ? 1 : 2);
+      if (rank(a) !== rank(b)) return rank(a) - rank(b);
+      return a.full_name.localeCompare(b.full_name);
+    });
 
   const FilterChip = ({ value, label }: { value: StatusFilter; label: string }) => {
     const active = statusFilter === value;
     return (
       <Pressable
         onPress={() => setStatusFilter(value)}
+        style={[styles.chip, active && styles.chipActive]}
+      >
+        <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+      </Pressable>
+    );
+  };
+
+  const DriverChip = ({ value, label }: { value: DriverFilter; label: string }) => {
+    const active = driverFilter === value;
+    return (
+      <Pressable
+        onPress={() => setDriverFilter(value)}
         style={[styles.chip, active && styles.chipActive]}
       >
         <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -117,18 +164,25 @@ export default function FleetScreen() {
       />
 
       <Input
-        placeholder="Search plate or model"
+        placeholder={section === 'vehicles' ? 'Search plate or model' : 'Search name or phone'}
         value={query}
         onChangeText={setQuery}
         autoCapitalize="none"
         prefix={<Search color={colors.textMuted} size={19} />}
       />
 
-      {section === 'vehicles' && (
+      {section === 'vehicles' ? (
         <View style={styles.chipRow}>
           <FilterChip value="all" label={`All · ${counts.all}`} />
           <FilterChip value="active" label={`Active · ${counts.active}`} />
           <FilterChip value="off" label={`Off road · ${counts.off}`} />
+        </View>
+      ) : (
+        <View style={styles.chipRow}>
+          <DriverChip value="all" label={`All · ${dCounts.all}`} />
+          <DriverChip value="active" label={`Active · ${dCounts.active}`} />
+          <DriverChip value="notaxi" label={`No taxi · ${dCounts.notaxi}`} />
+          <DriverChip value="license" label={`License · ${dCounts.license}`} />
         </View>
       )}
 
@@ -193,10 +247,16 @@ export default function FleetScreen() {
             </Card>
           ) : visibleDrivers.length === 0 ? (
             <Card>
-              <Text style={type.body}>No drivers match your search.</Text>
+              <Text style={type.body}>No drivers match your search or filter.</Text>
             </Card>
           ) : (
-            visibleDrivers.map((d) => <DriverCard key={d.id} driver={d} />)
+            visibleDrivers.map((d) => (
+              <DriverCard
+                key={d.id}
+                driver={d}
+                onNoTaxi={() => router.push({ pathname: '/driver/[id]', params: { id: d.id } })}
+              />
+            ))
           )}
         </View>
       )}

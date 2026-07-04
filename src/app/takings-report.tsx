@@ -19,7 +19,7 @@ import {
 } from 'date-fns';
 
 import { Button, Card, Screen, ScreenHeader, Segmented, SkeletonCard } from '@/components/ui';
-import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
+import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { periodForDate, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
 import type { AppSettings } from '@/types/db';
@@ -123,7 +123,7 @@ export default function TakingsReport() {
         id: r.id,
         date: r.date,
         vehicle: r.vehicle?.plate_no ?? '—',
-        driver: r.driver?.full_name ?? '—',
+        driver: formatName(r.driver?.full_name ?? '—'),
         amount: Number(r.amount_received),
       })),
     );

@@ -12,7 +12,7 @@ import { useFocusEffect } from 'expo-router';
 
 import { Badge, Button, Card, Screen, ScreenHeader, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
-import { formatDate, formatPGK, todayISO } from '@/lib/format';
+import { formatDate, formatName, formatPGK, todayISO } from '@/lib/format';
 import { DEDUCTION_TYPE_LABELS } from '@/lib/ledger';
 import { dayOfPeriod, type Period } from '@/lib/payroll';
 import {
@@ -110,7 +110,7 @@ export default function PayslipDetail() {
     };
     const message = periodRunning
       ? `This fortnight is still running (day ${dayOfPeriod(today, period)} of 14). Finalising now locks the numbers as they stand.\n\nNet pay: ${formatPGK(comp.netPay)}`
-      : `Lock this fortnight and record net pay of ${formatPGK(comp.netPay)} for ${data.driver.full_name}?`;
+      : `Lock this fortnight and record net pay of ${formatPGK(comp.netPay)} for ${formatName(data.driver.full_name)}?`;
     if (Platform.OS === 'web') {
       proceed();
       return;
@@ -146,7 +146,7 @@ export default function PayslipDetail() {
     if (res.localUri && (await Sharing.isAvailableAsync())) {
       await Sharing.shareAsync(res.localUri, {
         mimeType: 'application/pdf',
-        dialogTitle: `Payslip ${data.driver.full_name}`,
+        dialogTitle: `Payslip ${formatName(data.driver.full_name)}`,
       });
     }
     load();
@@ -165,7 +165,7 @@ export default function PayslipDetail() {
       proceed();
       return;
     }
-    Alert.alert('Mark as paid', `Confirm ${formatPGK(comp.netPay)} was paid to ${data.driver.full_name}?`, [
+    Alert.alert('Mark as paid', `Confirm ${formatPGK(comp.netPay)} was paid to ${formatName(data.driver.full_name)}?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Mark paid', onPress: proceed },
     ]);
@@ -199,7 +199,7 @@ export default function PayslipDetail() {
   return (
     <Screen bottomInset={spacing.xl}>
       <ScreenHeader
-        title={data.driver.full_name}
+        title={formatName(data.driver.full_name)}
         subtitle={`${formatDate(period.start)} – ${formatDate(period.end)}`}
         accessory={
           <Badge

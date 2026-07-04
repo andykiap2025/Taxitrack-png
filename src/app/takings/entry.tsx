@@ -20,7 +20,7 @@ import {
   loadTakingsForDate,
   type CheckinBundle,
 } from '@/lib/checkin';
-import { formatDateLong, formatPGK } from '@/lib/format';
+import { formatDateLong, formatName, formatPGK } from '@/lib/format';
 import { getQueueState, saveTakings } from '@/lib/offlineQueue';
 import { supabase } from '@/lib/supabase';
 import { colors, font, radius, spacing, type } from '@/lib/theme';
@@ -173,7 +173,7 @@ export default function TakingsEntry() {
 
   return (
     <Screen bottomInset={spacing.xl}>
-      <ScreenHeader title={driver.full_name} subtitle={formatDateLong(date)} />
+      <ScreenHeader title={formatName(driver.full_name)} subtitle={formatDateLong(date)} />
 
       {(existing || wasQueued) && (
         <View style={styles.noticeRow}>
@@ -234,7 +234,7 @@ export default function TakingsEntry() {
           {errors.vehicle ? <Text style={styles.error}>{errors.vehicle}</Text> : null}
           {isRelief && (
             <Text style={styles.reliefNote}>
-              Relief day — takings still credit {driver.full_name}.
+              Relief day — takings still credit {formatName(driver.full_name)}.
             </Text>
           )}
         </View>

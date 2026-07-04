@@ -8,7 +8,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Badge, Card, EmptyState, Screen, SkeletonCard } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
-import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
+import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { dayOfPeriod, periodForDate, type Period } from '@/lib/payroll';
 import { signedUrl } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
@@ -111,7 +111,7 @@ export function DriverHome() {
     );
   }
 
-  const firstName = driver.full_name.split(' ')[0] || profile?.full_name || 'Driver';
+  const firstName = formatName(driver.full_name).split(' ')[0] || profile?.full_name || 'Driver';
 
   return (
     <Screen>

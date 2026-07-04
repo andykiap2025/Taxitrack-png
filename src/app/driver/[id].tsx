@@ -34,7 +34,7 @@ import { useSignedUrl } from '@/hooks/useSignedUrl';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
 import { signedUrl } from '@/lib/storage';
 import { daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
-import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
+import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { DRIVER_STATUS, initialsOf } from '@/lib/labels';
 import {
   balanceLabel,
@@ -240,7 +240,7 @@ export default function DriverDetail() {
   return (
     <Screen bottomInset={spacing.xl}>
       <ScreenHeader
-        title={driver.full_name}
+        title={formatName(driver.full_name)}
         subtitle={driver.phone ?? undefined}
         accessory={
           isOwner ? (
@@ -499,7 +499,7 @@ export default function DriverDetail() {
                   <Text style={type.bodyMedium}>{v.plate_no}</Text>
                   <Text style={type.caption}>
                     {v.make} {v.model}
-                    {holder && holder.id !== driver.id ? ` · currently ${holder.full_name}` : ''}
+                    {holder && holder.id !== driver.id ? ` · currently ${formatName(holder.full_name)}` : ''}
                   </Text>
                 </View>
                 {isCurrent && <Badge label="Current" tone="success" />}

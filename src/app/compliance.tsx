@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Badge, Card, EmptyState, Screen, ScreenHeader, SkeletonCard } from '@/components/ui';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
 import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
+import { formatName } from '@/lib/format';
 import { signedUrl } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { colors, radius, shadow, spacing, type } from '@/lib/theme';
@@ -56,7 +57,7 @@ export default function ComplianceScreen() {
           <View style={styles.info}>
             <Text style={type.bodyMedium}>
               {DOC_TYPE_LABELS[doc.doc_type] ?? doc.doc_type} ·{' '}
-              {doc.vehicle?.plate_no ?? doc.driver?.full_name ?? '—'}
+              {doc.vehicle?.plate_no ?? formatName(doc.driver?.full_name ?? '—')}
             </Text>
             <Text style={type.caption}>
               {doc.reference_no ? `${doc.reference_no} · ` : ''}tap to renew

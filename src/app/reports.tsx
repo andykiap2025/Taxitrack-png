@@ -7,7 +7,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 
 import { BarChart, type BarDatum } from '@/components/BarChart';
 import { Badge, Card, Screen, ScreenHeader, Segmented, SkeletonCard, StatTile } from '@/components/ui';
-import { formatDate, formatDateShort, formatPGK, todayISO } from '@/lib/format';
+import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { periodForDate, shiftPeriod, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
 import { colors, font, radius, shadow, spacing, type } from '@/lib/theme';
@@ -287,7 +287,7 @@ export default function ReportsScreen() {
                   <View key={d.id} style={[styles.tr, idx % 2 === 1 && styles.trAlt]}>
                     <Text style={[styles.td, styles.cRank]}>{idx + 1}</Text>
                     <Text style={[styles.td, styles.cName]} numberOfLines={1}>
-                      {d.name}
+                      {formatName(d.name)}
                     </Text>
                     <Text style={[styles.td, styles.cNum, styles.cDays]}>{d.days}</Text>
                     <Text style={[styles.td, styles.cNum, styles.cAvg]}>
@@ -397,7 +397,7 @@ function reportHTML(r: Report): string {
   const driverRows = r.drivers
     .map(
       (d, i) =>
-        `<tr><td>${i + 1}</td><td>${d.name}</td><td class="num">${d.days}</td><td class="num">${formatPGK(d.avg, { decimals: 0 })}</td><td class="num">${d.shortfallDays}</td><td class="num"><b>${formatPGK(d.gross)}</b></td></tr>`,
+        `<tr><td>${i + 1}</td><td>${formatName(d.name)}</td><td class="num">${d.days}</td><td class="num">${formatPGK(d.avg, { decimals: 0 })}</td><td class="num">${d.shortfallDays}</td><td class="num"><b>${formatPGK(d.gross)}</b></td></tr>`,
     )
     .join('');
   const vehicleRows = r.vehicles
