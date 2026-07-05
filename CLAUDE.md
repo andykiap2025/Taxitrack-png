@@ -1,6 +1,6 @@
 # TaxiTrack PNG — Claude Code Anchor
 
-Display name: **Safco Taxi Service** (all user-visible branding).
+Display name: **Safeco Taxi Service** (all user-visible branding).
 Technical ids keep the codename: slug taxitrack-png, package com.skyworks.taxitrackpng.
 
 ## What this is

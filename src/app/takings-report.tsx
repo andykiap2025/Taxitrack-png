@@ -324,7 +324,7 @@ function tableHTML(kindLabel: string, rangeLabel: string, rows: Row[], total: nu
   tr.total td { font-weight:800; border-top:2px solid #101828; border-bottom:none; font-size:14px; }
   </style></head><body>
   <div class="head"><h1>Takings register · ${kindLabel}</h1>
-  <div class="sub">${rangeLabel} · Safco Taxi Service · Built by Skyworks Systems © 2026</div></div>
+  <div class="sub">${rangeLabel} · Safeco Taxi Service · Built by Skyworks Systems © 2026</div></div>
   <table>
     <tr><th>Date</th><th>Vehicle</th><th>Driver</th><th class="num">Takings</th></tr>
     ${body}

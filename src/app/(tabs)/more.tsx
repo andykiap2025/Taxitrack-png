@@ -72,7 +72,7 @@ export default function MoreScreen() {
       signOut();
       return;
     }
-    Alert.alert('Sign out', 'Sign out of Safco Taxi Service?', [
+    Alert.alert('Sign out', 'Sign out of Safeco Taxi Service?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign out', style: 'destructive', onPress: () => signOut() },
     ]);
@@ -140,7 +140,7 @@ export default function MoreScreen() {
         onPress={confirmSignOut}
       />
 
-      <Text style={styles.version}>Safco Taxi Service v1.0.0 · Built by Skyworks Systems · © 2026</Text>
+      <Text style={styles.version}>Safeco Taxi Service v1.0.0 · Built by Skyworks Systems · © 2026</Text>
     </Screen>
   );
 }

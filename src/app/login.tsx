@@ -59,7 +59,7 @@ export default function LoginScreen() {
                 style={styles.logoImg}
               />
             </View>
-            <Text style={styles.title}>Safco Taxi Service</Text>
+            <Text style={styles.title}>Safeco Taxi Service</Text>
             <Text style={styles.subtitle}>Fleet management · Port Moresby</Text>
           </View>
 

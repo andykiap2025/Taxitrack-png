@@ -192,7 +192,7 @@ export default function ReportsScreen() {
       } else {
         const { uri } = await Print.printToFileAsync({ html });
         if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Safco Taxi report' });
+          await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Safeco Taxi report' });
         }
       }
     } catch (err) {
@@ -418,7 +418,7 @@ function reportHTML(r: Report): string {
   .kpis { display:flex; gap:24px; margin-top:18px; font-size:13px; }
   .kpis b { display:block; font-size:18px; }
   </style></head><body>
-  <div class="head"><h1>Fleet report · Safco Taxi Service</h1>
+  <div class="head"><h1>Fleet report · Safeco Taxi Service</h1>
   <div class="sub">${formatDate(r.range.start)} – ${formatDate(r.range.end)} · Built by Skyworks Systems © 2026</div></div>
   <div class="kpis">
     <div>Gross takings<b>${formatPGK(r.totals.gross)}</b></div>

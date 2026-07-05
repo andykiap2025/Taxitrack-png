@@ -38,7 +38,7 @@ export async function setupStaffNotifications(): Promise<void> {
 
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
-        name: 'Safco Taxi alerts',
+        name: 'Safeco Taxi alerts',
         importance: Notifications.AndroidImportance.DEFAULT,
       });
     }
@@ -48,7 +48,7 @@ export async function setupStaffNotifications(): Promise<void> {
     // Nightly check-in reminder at the 23:30 escalation time.
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Safco Taxi — 11:30pm check',
+        title: 'Safeco Taxi — 11:30pm check',
         body: 'Review tonight’s board: any taxis not checked in yet?',
       },
       trigger: {
@@ -88,7 +88,7 @@ export async function setupStaffNotifications(): Promise<void> {
         if (fireAt.getTime() <= Date.now()) continue;
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: `Safco Taxi — ${label} ${t === 0 ? 'expires today' : `expires in ${t} days`}`,
+            title: `Safeco Taxi — ${label} ${t === 0 ? 'expires today' : `expires in ${t} days`}`,
             body: `${who}: ${label} expiry. Renew before the taxi is off the road.`,
           },
           trigger: {
