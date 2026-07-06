@@ -1,6 +1,7 @@
 import {
   BarChart3,
   ChevronRight,
+  KeyRound,
   LogOut,
   Settings,
   Siren,
@@ -64,6 +65,13 @@ export default function MoreScreen() {
       caption: 'Rates, targets, policies',
       ownerOnly: true,
       onPress: () => router.push('/settings'),
+    },
+    {
+      icon: KeyRound,
+      label: 'Change password',
+      caption: 'Update your sign-in password',
+      ownerOnly: true,
+      onPress: () => router.push('/change-password'),
     },
   ];
 
