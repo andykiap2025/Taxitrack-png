@@ -138,6 +138,17 @@ export const shadow = {
     },
     web: { boxShadow: '0 12px 28px rgba(16, 24, 40, 0.18)' } as ViewStyle,
   })!,
+  /** Deep soft shadow for a single floating panel (e.g. the auth card). */
+  floating: Platform.select<ViewStyle>({
+    default: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 20 },
+      shadowOpacity: 0.15,
+      shadowRadius: 40,
+      elevation: 18,
+    },
+    web: { boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)' } as ViewStyle,
+  })!,
   accentGlow: Platform.select<ViewStyle>({
     default: {
       shadowColor: colors.accentDark,

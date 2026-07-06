@@ -1,0 +1,8 @@
+# Netlify Drop silently skips folders named "node_modules", so the export
+# step renames assets/node_modules -> assets/vendor (scripts/prepare-pwa.mjs).
+# This rewrite keeps the original URLs (baked into the JS bundle) working.
+/assets/node_modules/*  /assets/vendor/:splat  200
+
+# Let expo-router handle client-side routes (e.g. /vehicle/abc123).
+# Existing files are served as-is; anything else falls back to the app shell.
+/*  /index.html  200

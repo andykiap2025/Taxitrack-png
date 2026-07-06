@@ -49,6 +49,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "pwa": "expo export -p web --clear && node scripts/prepare-pwa.mjs",
     "lint": "expo lint"
   },
   "private": true

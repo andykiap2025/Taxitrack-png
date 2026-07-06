@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Safeco Taxi Service — User Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1F2937;
+    font-size: 11.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  /* ---------- cover ---------- */
+  .cover {
+    height: 250mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .cover img {
+    width: 130px;
+    height: 130px;
+    border-radius: 28px;
+    margin-bottom: 28px;
+  }
+  .cover h1 {
+    font-size: 30pt;
+    color: #1E2A4A;
+    margin: 0 0 6px;
+  }
+  .cover .sub {
+    font-size: 15pt;
+    color: #6B7280;
+    margin-bottom: 40px;
+  }
+  .cover .band {
+    background: #1E2A4A;
+    color: #fff;
+    padding: 10px 34px;
+    border-radius: 999px;
+    font-size: 13pt;
+    font-weight: 600;
+  }
+  .cover .foot {
+    margin-top: 60px;
+    color: #9CA3AF;
+    font-size: 10pt;
+  }
+
+  /* ---------- typography ---------- */
+  h2 {
+    font-size: 17pt;
+    color: #1E2A4A;
+    border-bottom: 3px solid #1E2A4A;
+    padding-bottom: 5px;
+    margin: 0 0 14px;
+  }
+  h3 {
+    font-size: 12.5pt;
+    color: #1E2A4A;
+    margin: 18px 0 6px;
+  }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0 10px; padding-left: 22px; }
+  li { margin-bottom: 4px; }
+  .section { page-break-inside: avoid; }
+
+  .steps {
+    background: #F7F9FD;
+    border: 1px solid #E5E8EC;
+    border-left: 4px solid #1E2A4A;
+    border-radius: 8px;
+    padding: 10px 14px 10px 12px;
+    margin: 10px 0;
+  }
+  .steps ol { margin: 4px 0; }
+  .tip {
+    background: #FEF9EC;
+    border: 1px solid #F2E3B3;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 10.5pt;
+  }
+  .tip b { color: #B45309; }
+  .note {
+    background: #EEF4FB;
+    border: 1px solid #D4E2F4;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 10.5pt;
+  }
+  .note b { color: #1E2A4A; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 10.5pt;
+  }
+  th {
+    background: #1E2A4A;
+    color: #fff;
+    text-align: left;
+    padding: 7px 10px;
+  }
+  td {
+    border: 1px solid #E5E8EC;
+    padding: 6px 10px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #F7F9FD; }
+  .yes { color: #16A34A; font-weight: 700; }
+  .no  { color: #DC2626; font-weight: 700; }
+  .view { color: #D97706; font-weight: 700; }
+
+  .pill {
+    display: inline-block;
+    background: #E3E9F5;
+    color: #1E2A4A;
+    border-radius: 999px;
+    padding: 1px 10px;
+    font-weight: 600;
+    font-size: 10pt;
+  }
+  .money { font-weight: 700; color: #1E2A4A; white-space: nowrap; }
+  .footer-line {
+    margin-top: 26px;
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 9.5pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<div class="page cover">
+  <img src="../assets/play_store/icon_main_512x512.png" alt="Safeco Taxi Service logo">
+  <h1>Safeco Taxi Service</h1>
+  <div class="sub">Fleet management · Port Moresby</div>
+  <div class="band">User Guide</div>
+  <div class="foot">
+    Version 1.0 · July 2026<br>
+    Built by Skyworks Systems · © 2026
+  </div>
+</div>
+
+<!-- ================= 1. ABOUT ================= -->
+<div class="page">
+  <div class="section">
+    <h2>1. What this app does</h2>
+    <p>Safeco Taxi Service runs the daily business of the taxi fleet:</p>
+    <ul>
+      <li><b>Nightly check-in</b> — record each driver's takings when the taxis come to base at 11pm.</li>
+      <li><b>Targets</b> — every working day is compared to the taxi's daily target
+          (<span class="money">K180</span> standard taxi, <span class="money">K210</span> newer taxi).</li>
+      <li><b>Driver pay</b> — every fortnight, each driver earns <b>29% of everything they collected</b>,
+          minus any deductions. The app does all the maths and produces a payslip.</li>
+      <li><b>Fleet care</b> — services, registrations, safety stickers, MVIL insurance,
+          driver licenses — with warnings before anything expires.</li>
+      <li><b>Incidents</b> — accidents, fines and damage, with photos.</li>
+    </ul>
+
+    <h3>The three types of account</h3>
+    <table>
+      <tr><th>Account</th><th>Who uses it</th><th>What it is for</th></tr>
+      <tr>
+        <td><b>Owner</b></td>
+        <td>Ben</td>
+        <td>Everything — payroll, settings, reports, adding taxis and drivers.</td>
+      </tr>
+      <tr>
+        <td><b>Supervisor</b></td>
+        <td>The base supervisor</td>
+        <td>The nightly check-in, viewing the fleet, logging services and incidents.</td>
+      </tr>
+      <tr>
+        <td><b>Driver</b></td>
+        <td>Any driver (optional)</td>
+        <td>Sees only their own takings, fortnight estimate and payslips.</td>
+      </tr>
+    </table>
+    <p>Section 10 has the full list of who can do what.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Getting started</h2>
+    <h3>Installing the app</h3>
+    <div class="steps"><ol>
+      <li>Open the APK file on the Android phone (sent by WhatsApp, email or USB).</li>
+      <li>If the phone asks, allow "install from unknown sources".</li>
+      <li>Tap <b>Install</b>, then open <b>Safeco Taxi Service</b> from the home screen.</li>
+    </ol></div>
+
+    <h3>Signing in</h3>
+    <div class="steps"><ol>
+      <li>Type your email address and password.</li>
+      <li>Tap <b>Sign in</b>. The app remembers you — you stay signed in until you sign out.</li>
+    </ol></div>
+    <div class="tip"><b>Forgot the password?</b> The owner can change his own password in the app
+    (More → Change password). For the supervisor or a driver, contact Skyworks Systems to reset it.</div>
+
+    <h3>The menu bar at the bottom</h3>
+    <table>
+      <tr><th>Tab</th><th>What is there</th><th>Who sees it</th></tr>
+      <tr><td><b>Home</b></td><td>Tonight's board, fortnight totals, alerts</td><td>Everyone</td></tr>
+      <tr><td><b>Check-in</b></td><td>The nightly takings entry</td><td>Owner, supervisor</td></tr>
+      <tr><td><b>Fleet</b></td><td>Taxis and drivers</td><td>Owner, supervisor</td></tr>
+      <tr><td><b>Payroll</b></td><td>Fortnightly pay and payslips</td><td>Owner only</td></tr>
+      <tr><td><b>More</b></td><td>Service &amp; compliance, incidents, reports, settings</td><td>Everyone (items differ by role)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ================= 3. HOME ================= -->
+<div class="page">
+  <div class="section">
+    <h2>3. The Home screen</h2>
+    <p>The Home screen is the quick picture of tonight and the fortnight:</p>
+    <ul>
+      <li><b>Tonight's takings</b> — money recorded so far tonight.</li>
+      <li><b>Checked in</b> — how many drivers have been entered tonight (e.g. 3/5).</li>
+      <li><b>Fortnight so far</b> — total takings in the current pay period.</li>
+      <li><b>Payday in …</b> — days until the end of the fortnight.</li>
+      <li><b>Tonight's board</b> — every driver with tonight's result. Shortfalls show first, in red.</li>
+      <li><b>Service due / Expiring soon</b> — taxis needing service and documents about to expire.</li>
+    </ul>
+    <div class="note"><b>The big button</b> under the stats takes you straight to the check-in:
+    "Start check-in (4 left)" — or to review, once everyone is in.</div>
+  </div>
+
+  <div class="section">
+    <h2>4. The nightly check-in (11pm)</h2>
+    <p>This is the most important job in the app. When the taxis come to base:</p>
+    <div class="steps"><ol>
+      <li>Open the <b>Check-in</b> tab. Drivers who have not checked in yet are at the top under
+          the red heading; finished ones move down under the green heading.</li>
+      <li>Tap the driver's name.</li>
+      <li>Enter <b>Amount declared</b> — what the driver says they collected.</li>
+      <li>Enter <b>Cash received</b> — what was actually handed over.</li>
+      <li>The app immediately shows <b>over or short</b> against the taxi's target.</li>
+      <li>Add a note if something needs explaining (e.g. "fuel receipt K20").</li>
+      <li>Tap <b>Save check-in</b>. Done — next driver. It takes under 30 seconds each.</li>
+    </ol></div>
+
+    <h3>Good to know</h3>
+    <ul>
+      <li><b>Driver didn't work?</b> Simply don't enter anything for them. No entry = no target
+          = no shortfall for that day.</li>
+      <li><b>Relief driver / swapped taxi?</b> Always enter the takings on the driver <b>who actually
+          drove</b>. If they drove a different taxi that night, change the taxi on the entry screen —
+          the target follows the taxi.</li>
+      <li><b>Made a mistake?</b> Entries can be corrected for <b>24 hours</b>. After that they lock.
+          Only the owner can unlock a locked entry (for 1 hour), and every unlock is recorded.</li>
+      <li><b>Shortfall / surplus</b> — a night under target writes a debit in the driver's book;
+          a night over target writes a credit. They net out automatically at payday.</li>
+    </ul>
+
+    <div class="tip"><b>No internet at base?</b> Keep working normally. Entries save on the phone
+    and show "Saved on this phone — waiting to sync". The moment the phone gets internet again,
+    they send themselves. Nothing is lost.</div>
+  </div>
+</div>
+
+<!-- ================= 5. FLEET ================= -->
+<div class="page">
+  <div class="section">
+    <h2>5. Fleet — taxis and drivers</h2>
+    <p>The <b>Fleet</b> tab has two lists: <b>Taxis</b> and <b>Drivers</b>. Use the search box and
+    the filter chips (All / Active / Off road…) to find anyone quickly.</p>
+
+    <h3>Taxis (owner adds and edits)</h3>
+    <ul>
+      <li>Tap <b>+</b> to add a taxi: plate number, make and model, year, photo, and its class —
+          <b>Standard (K180/day)</b> or <b>Newer (K210/day)</b>. The class sets the daily target.</li>
+      <li>Tap a taxi to see its page: assigned driver, service history, documents, takings.</li>
+      <li><b>Off road?</b> (breakdown, service, accident) — the owner marks it off road on the taxi's
+          page. While a taxi is off road, no targets apply to it. Mark it back when it returns.</li>
+    </ul>
+
+    <h3>Drivers (owner adds and edits)</h3>
+    <ul>
+      <li>Tap <b>+</b> in the Drivers view: name, phone, license number and expiry, province, photo.</li>
+      <li><b>Assign a taxi</b> from the driver's page — one driver, one taxi. History is kept.</li>
+      <li>The driver's page also shows their <b>balance book</b> (shortfalls and surpluses),
+          deductions and full takings history.</li>
+      <li>A yellow or red pill appears on the list when a driver's <b>license</b> is close to expiry.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>6. How driver pay works</h2>
+    <p>Pay runs in <b>fortnights</b> (14 days). For each driver:</p>
+    <div class="steps"><ol>
+      <li><b>Gross takings</b> — everything recorded against the driver in the fortnight.</li>
+      <li><b>× 29%</b> — the driver's commission.</li>
+      <li><b>− deductions</b> — fuel advances, fines, charged damage, and any leftover shortfall
+          (after surpluses have cancelled shortfalls out).</li>
+      <li><b>= Net pay</b> — printed on the payslip.</li>
+    </ol></div>
+    <p><b>Example:</b> a driver collects <span class="money">K2,000</span> in the fortnight.
+    29% = <span class="money">K580</span>. He had a <span class="money">K30</span> fuel advance,
+    so payday is <span class="money">K550</span>.</p>
+
+    <h3>Payroll — owner only</h3>
+    <div class="steps"><ol>
+      <li>Open the <b>Payroll</b> tab. The current fortnight shows every driver's numbers building up.</li>
+      <li>Use the arrows at the top to move between fortnights.</li>
+      <li>At the end of the fortnight, open each driver, check the numbers and tap <b>Finalise</b>.
+          This freezes the pay and creates the <b>PDF payslip</b>.</li>
+      <li>Share the payslip (WhatsApp, print) and tap <b>Mark paid</b> when the money is given.</li>
+    </ol></div>
+    <div class="note"><b>Deductions</b> (fuel advance, fine, other) are added on the driver's page
+    by the owner, any day of the fortnight. They come off automatically at payday.</div>
+  </div>
+</div>
+
+<!-- ================= 7. SERVICE & COMPLIANCE ================= -->
+<div class="page">
+  <div class="section">
+    <h2>7. Service &amp; compliance</h2>
+    <h3>Vehicle servicing</h3>
+    <ul>
+      <li>Open <b>More → Service &amp; Compliance → Vehicle servicing</b>.</li>
+      <li>Log each service with date and cost. The app works out the next one —
+          <b>3 months or 5,000&nbsp;km, whichever comes first</b> — and warns on the Home screen when due.</li>
+      <li>Both the owner and the supervisor can log services.</li>
+    </ul>
+
+    <h3>Compliance documents</h3>
+    <p>Registrations, safety stickers, MVIL insurance and driver licenses all live in
+    <b>More → Service &amp; Compliance</b>. Each document shows a colour countdown:
+    green = fine, yellow = renew soon (30 days), red = urgent (7 days) or expired.</p>
+    <ul>
+      <li><b>Owner:</b> tap <b>+</b> to add a document, or tap one to renew it. Photos of the
+          paperwork can be attached from the camera or gallery.</li>
+      <li><b>Supervisor:</b> can see all documents and photos, but cannot add or change them.</li>
+    </ul>
+    <div class="tip"><b>Typical validity:</b> registration 12 months · safety sticker 6 months ·
+    MVIL 12 months · license as printed on it. The app suggests the expiry date automatically.</div>
+  </div>
+
+  <div class="section">
+    <h2>8. Incidents</h2>
+    <div class="steps"><ol>
+      <li>Open <b>More → Incidents</b> and tap <b>+</b>.</li>
+      <li>Pick the taxi and driver, describe what happened, enter the cost if known.</li>
+      <li>Attach photos of the damage or the fine.</li>
+      <li>Save. The owner can additionally <b>charge the cost to the driver</b> — it then appears
+          as a deduction at the next payday.</li>
+    </ol></div>
+  </div>
+
+  <div class="section">
+    <h2>9. Reports — owner only</h2>
+    <ul>
+      <li><b>More → Reports</b> — the fortnight at a glance: daily takings chart, target-met rate,
+          driver ranking, and profit per taxi (takings minus service and incident costs).</li>
+      <li><b>Takings register</b> — a clean table of every entry by day, week, fortnight, month
+          or term, with totals.</li>
+      <li>Both export to <b>PDF</b> (for printing / WhatsApp) and the register also to
+          <b>Excel</b> for the accountant.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ================= 10. ROLES + SETTINGS ================= -->
+<div class="page">
+  <div class="section">
+    <h2>10. Who can do what</h2>
+    <table>
+      <tr><th>Action</th><th>Owner</th><th>Supervisor</th><th>Driver</th></tr>
+      <tr><td>Enter tonight's takings</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+      <tr><td>Fix an entry (within 24 hours)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+      <tr><td>Unlock an old entry</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>See the fleet (taxis &amp; drivers)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+      <tr><td>Add / edit taxis and drivers</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Assign taxis, mark off road</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Log vehicle services</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+      <tr><td>Compliance documents</td><td class="yes">Yes</td><td class="view">View only</td><td class="no">No</td></tr>
+      <tr><td>Report incidents (with photos)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td></tr>
+      <tr><td>Charge incident cost to a driver</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Add deductions (fuel, fines…)</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Payroll &amp; payslips</td><td class="yes">Yes</td><td class="no">No</td><td>Own only</td></tr>
+      <tr><td>Reports &amp; takings register</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Settings (rates, targets, policies)</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>See own takings &amp; payslips</td><td class="yes">Yes</td><td>—</td><td class="yes">Yes</td></tr>
+    </table>
+    <p style="font-size:10pt;color:#6B7280">These rules are enforced by the server, not just
+    hidden in the app — a supervisor account cannot change compliance or payroll data even from
+    another device.</p>
+  </div>
+
+  <div class="section">
+    <h2>11. Settings &amp; security — owner only</h2>
+    <h3>Settings (More → Settings)</h3>
+    <ul>
+      <li><b>Driver commission</b> — the 29% rate.</li>
+      <li><b>Daily targets</b> — K180 standard / K210 newer. Changing them affects <b>future</b>
+          nights only; past records keep the target they were saved with.</li>
+      <li><b>Shortfall &amp; surplus policy</b> — how under- and over-target nights are settled at payday.</li>
+      <li><b>Nightly check-in time</b> and grace period — for the late-check-in reminder.</li>
+    </ul>
+
+    <h3>Changing your password (More → Change password)</h3>
+    <div class="steps"><ol>
+      <li>Enter your current password.</li>
+      <li>Enter the new one twice (at least 8 characters).</li>
+      <li>Tap <b>Change password</b>. Use the new password from the next sign-in.</li>
+    </ol></div>
+  </div>
+</div>
+
+<!-- ================= 12. TROUBLESHOOTING ================= -->
+<div class="page">
+  <div class="section">
+    <h2>12. If something goes wrong</h2>
+    <table>
+      <tr><th>Problem</th><th>What to do</th></tr>
+      <tr>
+        <td>"Saved on this phone — waiting to sync" stays on</td>
+        <td>The phone has no internet. The entry is safe. Move where there is signal or Wi-Fi —
+            it sends itself automatically.</td>
+      </tr>
+      <tr>
+        <td>Can't change last night's entry</td>
+        <td>Entries lock after 24 hours. Ask the owner — he can unlock it for 1 hour from the
+            entry screen. The unlock is recorded.</td>
+      </tr>
+      <tr>
+        <td>Wrong email or password</td>
+        <td>Check the spelling of the email. Owner: change your password in More → Change password.
+            Supervisor/driver: the password must be reset by Skyworks Systems.</td>
+      </tr>
+      <tr>
+        <td>A driver worked but shows "not checked in"</td>
+        <td>Their takings were never entered. Enter them the same night, or within 24 hours.</td>
+      </tr>
+      <tr>
+        <td>Numbers look old / screen not updating</td>
+        <td>Pull the screen down to refresh, or close and reopen the app.</td>
+      </tr>
+      <tr>
+        <td>A taxi is being serviced / broken down</td>
+        <td>Owner marks it <b>off road</b> on the taxi's page so no targets count against it.
+            Mark it back when it returns to work.</td>
+      </tr>
+      <tr>
+        <td>New phone</td>
+        <td>Install the APK on the new phone and sign in with the same email and password.
+            All data lives safely online — nothing is lost with a phone.</td>
+      </tr>
+    </table>
+
+    <h3>Golden rules</h3>
+    <ul>
+      <li>Enter takings <b>the same night</b> — the 24-hour lock protects everyone.</li>
+      <li>Takings always go to the driver <b>who actually drove</b>.</li>
+      <li>No entry means "didn't work" — never enter K0.00 for a driver who stayed home
+          unless he really worked and collected nothing.</li>
+      <li>Finalise payroll only after checking each driver's fortnight.</li>
+    </ul>
+
+    <div class="footer-line">
+      Safeco Taxi Service · User Guide v1.0 · July 2026<br>
+      Built by Skyworks Systems · © 2026
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

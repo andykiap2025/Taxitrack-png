@@ -63,7 +63,7 @@ export default function LoginScreen() {
             <Text style={styles.subtitle}>Fleet management · Port Moresby</Text>
           </View>
 
-          <Card raised style={styles.card}>
+          <Card style={styles.card}>
             <Text style={type.sectionTitle}>Sign in</Text>
 
             {!isSupabaseConfigured && (
@@ -114,6 +114,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
     gap: spacing.xl,
+    // Compact centered auth column on desktop; full width on phones.
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
   },
   brand: {
     alignItems: 'center',
@@ -143,8 +147,10 @@ const styles = StyleSheet.create({
     color: colors.textOnDarkMuted,
   },
   card: {
-    gap: spacing.md,
-    padding: spacing.lg,
+    gap: spacing.lg,
+    padding: spacing.xl,
+    borderRadius: radius.xl,
+    ...shadow.floating,
   },
   configWarning: {
     backgroundColor: colors.warningSoft,
