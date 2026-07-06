@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CheckCircle2, Lock, RefreshCw } from 'lucide-react-native';
+import { CheckCircle2, ChevronLeft, ChevronRight, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -15,6 +15,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import {
   computeCheckinStatus,
+  defaultBusinessDate,
   isTakingsLocked,
   loadBundle,
   loadTakingsForDate,
@@ -27,9 +28,13 @@ import { colors, font, radius, spacing, type } from '@/lib/theme';
 import type { DailyTakings } from '@/types/db';
 
 export default function TakingsEntry() {
-  const { driverId, date } = useLocalSearchParams<{ driverId: string; date: string }>();
+  const { driverId, date: dateParam } = useLocalSearchParams<{ driverId: string; date: string }>();
   const router = useRouter();
   const { session, role } = useAuth();
+
+  // The date can be changed on this screen (e.g. entering last night's
+  // takings the next day), so it lives in state, seeded from the route.
+  const [date, setDate] = useState(dateParam);
 
   const [bundle, setBundle] = useState<CheckinBundle | null>(null);
   const [existing, setExisting] = useState<DailyTakings | null>(null);
@@ -59,22 +64,43 @@ export default function TakingsEntry() {
       if (queuedItem) {
         const p = queuedItem.payload;
         setWasQueued(true);
+        setExisting(null);
         setVehicleId(p.vehicle_id);
         setDeclared(String(p.amount_declared));
         setReceived(String(p.amount_received));
         setNotes(p.notes ?? '');
       } else if (serverRow) {
+        setWasQueued(false);
         setExisting(serverRow);
         setVehicleId(serverRow.vehicle_id);
         setDeclared(String(serverRow.amount_declared));
         setReceived(String(serverRow.amount_received));
         setNotes(serverRow.notes ?? '');
-      } else if (b.bundle) {
-        setVehicleId(b.bundle.assignments[driverId] ?? null);
+      } else {
+        // No entry for this date — start a fresh form (matters when the
+        // user switches dates after an existing entry was loaded).
+        setWasQueued(false);
+        setExisting(null);
+        setVehicleId(b.bundle?.assignments[driverId] ?? null);
+        setDeclared('');
+        setReceived('');
+        setNotes('');
       }
+      setErrors({});
       setLoading(false);
     })();
   }, [driverId, date]);
+
+  const businessToday = defaultBusinessDate();
+
+  const shiftDate = (delta: number) => {
+    const d = new Date(`${date}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + delta);
+    const next = d.toISOString().slice(0, 10);
+    if (next > businessToday) return;
+    setDate(next);
+    setLoading(true);
+  };
 
   const driver = bundle?.drivers.find((d) => d.id === driverId);
   const vehicles = bundle?.vehicles ?? [];
@@ -173,7 +199,41 @@ export default function TakingsEntry() {
 
   return (
     <Screen bottomInset={spacing.xl}>
-      <ScreenHeader title={formatName(driver.full_name)} subtitle={formatDateLong(date)} />
+      <ScreenHeader title={formatName(driver.full_name)} />
+
+      {/* Date selector — arrows move a day at a time, capped at tonight,
+          so last night's takings can be entered the next day. */}
+      <Card style={styles.dateCard}>
+        <Pressable
+          onPress={() => shiftDate(-1)}
+          style={styles.dateBtn}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Previous day"
+        >
+          <ChevronLeft color={colors.text} size={20} />
+        </Pressable>
+        <View style={styles.dateMiddle}>
+          <Text style={styles.dateValue}>
+            {date === businessToday ? 'Tonight' : formatDateLong(date)}
+          </Text>
+          <Text style={styles.dateHint}>
+            {date === businessToday
+              ? formatDateLong(date)
+              : 'Past night — will show under this date in reports'}
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => shiftDate(1)}
+          style={[styles.dateBtn, date >= businessToday && styles.dateBtnDisabled]}
+          hitSlop={8}
+          disabled={date >= businessToday}
+          accessibilityRole="button"
+          accessibilityLabel="Next day"
+        >
+          <ChevronRight color={colors.text} size={20} />
+        </Pressable>
+      </Card>
 
       {(existing || wasQueued) && (
         <View style={styles.noticeRow}>
@@ -325,6 +385,36 @@ export default function TakingsEntry() {
 const styles = StyleSheet.create({
   noticeRow: {
     flexDirection: 'row',
+  },
+  dateCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+  },
+  dateBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateBtnDisabled: {
+    opacity: 0.35,
+  },
+  dateMiddle: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 2,
+  },
+  dateValue: {
+    fontFamily: font.bold,
+    fontSize: 16,
+    color: colors.text,
+  },
+  dateHint: {
+    ...type.caption,
+    textAlign: 'center',
   },
   lockCard: {
     gap: spacing.sm,

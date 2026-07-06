@@ -24,7 +24,14 @@ const nodeModulesAssets = path.join(dist, 'assets', 'node_modules');
 const vendorAssets = path.join(dist, 'assets', 'vendor');
 if (existsSync(nodeModulesAssets)) {
   rmSync(vendorAssets, { recursive: true, force: true });
-  renameSync(nodeModulesAssets, vendorAssets);
+  try {
+    renameSync(nodeModulesAssets, vendorAssets);
+  } catch {
+    // Windows sometimes denies renaming a just-written folder (antivirus
+    // lock) — copy + delete achieves the same result.
+    cpSync(nodeModulesAssets, vendorAssets, { recursive: true });
+    rmSync(nodeModulesAssets, { recursive: true, force: true });
+  }
   console.log('Renamed assets/node_modules -> assets/vendor');
 }
 
