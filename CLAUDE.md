@@ -51,7 +51,8 @@ Full spec: ../TaxiTrack-PNG-Build-Plan.md · Design bar: ../Premium Mobile App D
 
 ## RBAC
 - owner: full access
-- supervisor: enter takings, view fleet, no payroll/settings
+- supervisor: enter takings, view fleet, log service &
+  incidents; compliance READ-ONLY; no reports/payroll/settings
 - driver: read own records only
 
 ## Design System (NON-NEGOTIABLE — see the PDF)

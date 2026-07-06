@@ -5,9 +5,10 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Card, EmptyState, Screen, ScreenHeader, SkeletonCard } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery';
 import { DOC_TYPE_LABELS, daysUntil, expiryLabel, toneForDays } from '@/lib/alerts';
-import { formatName } from '@/lib/format';
+import { formatDate, formatName } from '@/lib/format';
 import { signedUrl } from '@/lib/storage';
 import { supabase } from '@/lib/supabase';
 import { colors, radius, shadow, spacing, type } from '@/lib/theme';
@@ -20,6 +21,8 @@ type DocRow = ComplianceDoc & {
 
 export default function ComplianceScreen() {
   const router = useRouter();
+  const { role } = useAuth();
+  const canEdit = role === 'owner';
 
   const q = useSupabaseQuery<DocRow[]>(
     () =>
@@ -44,11 +47,15 @@ export default function ComplianceScreen() {
       {items.map((doc, idx) => (
         <Pressable
           key={doc.id}
-          onPress={() => router.push({ pathname: '/compliance/form', params: { docId: doc.id } })}
+          onPress={
+            canEdit
+              ? () => router.push({ pathname: '/compliance/form', params: { docId: doc.id } })
+              : undefined
+          }
           style={({ pressed }) => [
             styles.row,
             idx < items.length - 1 && styles.divider,
-            pressed && { backgroundColor: colors.surfaceMuted },
+            canEdit && pressed && { backgroundColor: colors.surfaceMuted },
           ]}
         >
           <View style={styles.icon}>
@@ -60,7 +67,8 @@ export default function ComplianceScreen() {
               {doc.vehicle?.plate_no ?? formatName(doc.driver?.full_name ?? '—')}
             </Text>
             <Text style={type.caption}>
-              {doc.reference_no ? `${doc.reference_no} · ` : ''}tap to renew
+              {doc.reference_no ? `${doc.reference_no} · ` : ''}
+              {canEdit ? 'tap to renew' : `expires ${formatDate(doc.expiry_date)}`}
             </Text>
           </View>
           {doc.document_url ? (
@@ -80,13 +88,15 @@ export default function ComplianceScreen() {
         title="Compliance"
         subtitle="Rego · safety stickers · MVIL · licenses"
         accessory={
-          <Pressable
-            onPress={() => router.push('/compliance/form')}
-            style={({ pressed }) => [styles.addBtn, shadow.accentGlow, pressed && { transform: [{ scale: 0.94 }] }]}
-            accessibilityLabel="Add document"
-          >
-            <Plus color={colors.onAccent} size={22} />
-          </Pressable>
+          canEdit ? (
+            <Pressable
+              onPress={() => router.push('/compliance/form')}
+              style={({ pressed }) => [styles.addBtn, shadow.accentGlow, pressed && { transform: [{ scale: 0.94 }] }]}
+              accessibilityLabel="Add document"
+            >
+              <Plus color={colors.onAccent} size={22} />
+            </Pressable>
+          ) : undefined
         }
       />
 
@@ -100,9 +110,13 @@ export default function ComplianceScreen() {
           <EmptyState
             icon={<ShieldCheck color={colors.textMuted} size={30} />}
             title="No documents yet"
-            message="Add registrations, safety stickers, MVIL insurance and licenses to get expiry alerts."
-            actionLabel="Add document"
-            onAction={() => router.push('/compliance/form')}
+            message={
+              canEdit
+                ? 'Add registrations, safety stickers, MVIL insurance and licenses to get expiry alerts.'
+                : 'Registrations, safety stickers, MVIL insurance and licenses will appear here.'
+            }
+            actionLabel={canEdit ? 'Add document' : undefined}
+            onAction={canEdit ? () => router.push('/compliance/form') : undefined}
           />
         </Card>
       ) : (

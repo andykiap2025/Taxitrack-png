@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import { useFocusEffect } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { ChevronLeft, ChevronRight, FileDown, Sheet as SheetIcon } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, FileDown, Sheet as SheetIcon, ShieldAlert } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import {
@@ -18,7 +18,8 @@ import {
   startOfWeek,
 } from 'date-fns';
 
-import { Button, Card, Screen, ScreenHeader, Segmented, SkeletonCard } from '@/components/ui';
+import { Button, Card, EmptyState, Screen, ScreenHeader, Segmented, SkeletonCard } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { periodForDate, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
@@ -83,6 +84,7 @@ function shiftAnchor(kind: PeriodKind, anchorISO: string, dir: 1 | -1): string {
 }
 
 export default function TakingsReport() {
+  const { role } = useAuth();
   const [kind, setKind] = useState<PeriodKind>('day');
   const [anchor, setAnchor] = useState(todayISO());
   const [payAnchor, setPayAnchor] = useState('2026-01-05');
@@ -132,9 +134,25 @@ export default function TakingsReport() {
 
   useFocusEffect(
     useCallback(() => {
+      if (role !== 'owner') return;
       load(kind, anchor);
-    }, [load, kind, anchor]),
+    }, [load, kind, anchor, role]),
   );
+
+  if (role !== 'owner') {
+    return (
+      <Screen bottomInset={spacing.xl}>
+        <ScreenHeader title="Takings register" />
+        <Card padded={false}>
+          <EmptyState
+            icon={<ShieldAlert color={colors.textMuted} size={30} />}
+            title="Owner only"
+            message="Reports are restricted to the owner account."
+          />
+        </Card>
+      </Screen>
+    );
+  }
 
   const total = rows.reduce((s, r) => s + r.amount, 0);
   const rangeLabel = range

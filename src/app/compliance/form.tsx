@@ -13,6 +13,7 @@ import {
   Segmented,
   SkeletonCard,
 } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
 import { DOC_TYPE_LABELS } from '@/lib/alerts';
 import { formatDate, parseDMY, todayISO } from '@/lib/format';
 import { uploadBase64 } from '@/lib/storage';
@@ -40,6 +41,7 @@ function addMonths(dateISO: string, months: number): string {
 export default function ComplianceForm() {
   const { docId } = useLocalSearchParams<{ docId?: string }>();
   const router = useRouter();
+  const { role } = useAuth();
   const renewing = !!docId;
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -163,6 +165,17 @@ export default function ComplianceForm() {
 
   const entities = ownerType === 'vehicle' ? vehicles : drivers;
   const docTypes = ownerType === 'vehicle' ? VEHICLE_DOCS : DRIVER_DOCS;
+
+  if (role !== 'owner') {
+    return (
+      <Screen bottomInset={spacing.xl}>
+        <ScreenHeader title={renewing ? 'Renew document' : 'Add document'} />
+        <Card>
+          <Text style={type.body}>Only the owner can add or renew documents.</Text>
+        </Card>
+      </Screen>
+    );
+  }
 
   return (
     <Screen bottomInset={spacing.xl}>

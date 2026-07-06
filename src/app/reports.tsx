@@ -1,12 +1,13 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { Banknote, ChevronRight, FileDown, Table2, Target, TrendingUp } from 'lucide-react-native';
+import { Banknote, ChevronRight, FileDown, ShieldAlert, Table2, Target, TrendingUp } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 
 import { BarChart, type BarDatum } from '@/components/BarChart';
-import { Badge, Card, Screen, ScreenHeader, Segmented, SkeletonCard, StatTile } from '@/components/ui';
+import { Badge, Card, EmptyState, Screen, ScreenHeader, Segmented, SkeletonCard, StatTile } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateShort, formatName, formatPGK, todayISO } from '@/lib/format';
 import { periodForDate, shiftPeriod, type Period } from '@/lib/payroll';
 import { supabase } from '@/lib/supabase';
@@ -55,6 +56,7 @@ function addDays(date: string, days: number): string {
 
 export default function ReportsScreen() {
   const router = useRouter();
+  const { role } = useAuth();
   const [rangeKey, setRangeKey] = useState<RangeKey>('this_fn');
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
@@ -178,9 +180,25 @@ export default function ReportsScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      if (role !== 'owner') return;
       load(rangeKey);
-    }, [load, rangeKey]),
+    }, [load, rangeKey, role]),
   );
+
+  if (role !== 'owner') {
+    return (
+      <Screen bottomInset={spacing.xl}>
+        <ScreenHeader title="Reports" />
+        <Card padded={false}>
+          <EmptyState
+            icon={<ShieldAlert color={colors.textMuted} size={30} />}
+            title="Owner only"
+            message="Reports are restricted to the owner account."
+          />
+        </Card>
+      </Screen>
+    );
+  }
 
   const exportPDF = async () => {
     if (!report) return;

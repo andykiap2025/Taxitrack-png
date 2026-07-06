@@ -55,7 +55,7 @@ export default function MoreScreen() {
       icon: BarChart3,
       label: 'Reports',
       caption: 'Profitability, trends, rankings',
-      staffOnly: true,
+      ownerOnly: true,
       onPress: () => router.push('/reports'),
     },
     {

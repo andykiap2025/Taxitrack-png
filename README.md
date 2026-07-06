@@ -16,7 +16,7 @@ MVIL, licenses), incidents, and produces PDF payslips and fleet reports.
 - **Expo SDK 57** (React Native + TypeScript), expo-router
 - **Supabase** — Postgres, Auth, Storage, Row Level Security
 - **Offline-first check-in** — entries queue in AsyncStorage and sync on reconnect
-- Roles: **owner** (everything) · **supervisor** (check-in, fleet, compliance) ·
+- Roles: **owner** (everything) · **supervisor** (check-in, fleet, service; compliance read-only) ·
   **driver** (own takings & payslips)
 
 ## Running it

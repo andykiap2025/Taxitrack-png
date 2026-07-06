@@ -23,6 +23,7 @@ Follow these steps once; after that the app just works.
    5. `migrations/00005_photos_and_details.sql`
    6. `migrations/00006_optional_odometer.sql`
    7. `migrations/00007_optional_service_odometer.sql`
+   8. `migrations/00008_supervisor_readonly_compliance.sql`
 3. Each should end with "Success. No rows returned".
 
 > Set up earlier with fewer migration files? Just run the ones you're
